@@ -8,45 +8,40 @@ using Microsoft.EntityFrameworkCore;
 using CustomerRelationsManagement.Web.Data;
 using AutoMapper;
 using CustomerRelationsManagement.Web.Models;
+using CustomerRelationsManagement.Web.Contracts;
 
 namespace CustomerRelationsManagement.Web.Controllers
 {
     public class ClientController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IClientRepository clientRepository;
         private readonly IMapper mapper;
+        
 
-        public ClientController(ApplicationDbContext context, IMapper mapper)
+        public ClientController(IClientRepository clientRepository, IMapper mapper)
         {
-            _context = context;
+            this.clientRepository = clientRepository;
             this.mapper = mapper;
         }
 
         // GET: Client
         public async Task<IActionResult> Index()
         {
-              return _context.Clients != null ? 
-                          View(mapper.Map<List<ClientViewModel>>(await _context.Clients.ToListAsync())) :
-                          Problem("Entity set 'ApplicationDbContext.Clients'  is null.");
+            return View(mapper.Map<List<ClientViewModel>>(await clientRepository.GetAllAsync()));
         }
 
         // GET: Client/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Clients == null)
-            {
-                return NotFound();
-            }
 
-            var client = await _context.Clients
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var client = await clientRepository.GetAsync(id);
+            
             if (client == null)
             {
                 return NotFound();
             }
 
             var clientViewModel = mapper.Map<ClientViewModel>(client);
-
             return View(clientViewModel);
         }
 
@@ -66,8 +61,7 @@ namespace CustomerRelationsManagement.Web.Controllers
             if (ModelState.IsValid)
             {
                 var client = mapper.Map<Client>(clientViewModel);
-                _context.Add(client);
-                await _context.SaveChangesAsync();
+                await clientRepository.AddAsync(client);
                 return RedirectToAction(nameof(Index));
             }
             return View(clientViewModel);
@@ -76,12 +70,7 @@ namespace CustomerRelationsManagement.Web.Controllers
         // GET: Client/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.Clients == null)
-            {
-                return NotFound();
-            }
-
-            var client = await _context.Clients.FindAsync(id);
+            var client = await clientRepository.GetAsync(id);
             if (client == null)
             {
                 return NotFound();
@@ -108,12 +97,11 @@ namespace CustomerRelationsManagement.Web.Controllers
                 try
                 {
                     var client = mapper.Map<Client>(clientViewModel);
-                    _context.Update(client);
-                    await _context.SaveChangesAsync();
+                    await clientRepository.UpdateAsync(client);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ClientExists(clientViewModel.Id))
+                    if (!await clientRepository.Exists(clientViewModel.Id))
                     {
                         return NotFound();
                     }
@@ -125,49 +113,15 @@ namespace CustomerRelationsManagement.Web.Controllers
                 return RedirectToAction(nameof(Index));
             }
             return View(clientViewModel);
-        }
-
-        // GET: Client/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null || _context.Clients == null)
-            {
-                return NotFound();
-            }
-
-            
-            var client = await _context.Clients
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (client == null)
-            {
-                return NotFound();
-            }
-
-            return View(client);
-        }
+        } 
 
         // POST: Client/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Clients == null)
-            {
-                return Problem("Entity set 'ApplicationDbContext.Clients'  is null.");
-            }
-            var client = await _context.Clients.FindAsync(id);
-            if (client != null)
-            {
-                _context.Clients.Remove(client);
-            }
-            
-            await _context.SaveChangesAsync();
+            await clientRepository.DeleteAsync(id);
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool ClientExists(int id)
-        {
-          return (_context.Clients?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }
