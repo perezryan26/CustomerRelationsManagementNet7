@@ -9,9 +9,12 @@ using CustomerRelationsManagement.Web.Data;
 using AutoMapper;
 using CustomerRelationsManagement.Web.Models;
 using CustomerRelationsManagement.Web.Contracts;
+using Microsoft.AspNetCore.Authorization;
+using CustomerRelationsManagement.Web.Constants;
 
 namespace CustomerRelationsManagement.Web.Controllers
 {
+    [Authorize(Roles = Roles.Administrator)]
     public class ClientController : Controller
     {
         private readonly IClientRepository clientRepository;

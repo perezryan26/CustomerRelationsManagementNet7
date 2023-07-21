@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using CustomerRelationsManagement.Web.Constants;
 
 namespace CustomerRelationsManagement.Web.Areas.Identity.Pages.Account
 {
@@ -94,7 +95,7 @@ namespace CustomerRelationsManagement.Web.Areas.Identity.Pages.Account
 
             [DataType(DataType.Date)]
             [Display(Name = "Date Joined")]
-            public DateTime DateJoined { get; set; }  
+            public DateTime? DateJoined { get; set; }  
 
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
@@ -135,7 +136,7 @@ namespace CustomerRelationsManagement.Web.Areas.Identity.Pages.Account
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
                 user.FirstName = Input.Firstname;
                 user.LastName = Input.Lastname; 
-                user.DateJoined = Input.DateJoined;
+                user.DateJoined = Input.DateJoined ?? default;
                 user.DateOfBirth = Input.DateOfBirth;
 
                 var result = await _userManager.CreateAsync(user, Input.Password);
@@ -143,6 +144,7 @@ namespace CustomerRelationsManagement.Web.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
+                    await _userManager.AddToRoleAsync(user, Roles.User);
 
                     var userId = await _userManager.GetUserIdAsync(user);
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);

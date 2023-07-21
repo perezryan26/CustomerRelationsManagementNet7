@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using CustomerRelationsManagement.Web.Constants;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -12,14 +13,14 @@ namespace CustomerRelationsManagement.Web.Configurations.Entities
                 new IdentityRole
                 {
                     Id = "87d97800-99b0-4df4-b06e-fe694e99c433",
-                    Name = "Administrator",
-                    NormalizedName = "ADMINISTRATOR"
+                    Name = Roles.Administrator,
+                    NormalizedName = Roles.Administrator.ToUpper()
                 },
                 new IdentityRole
                 {
                     Id = "87d97513-99b0-4df4-b06e-fe694e99c433",
-                    Name = "User",
-                    NormalizedName = "USER"
+                    Name = Roles.User,
+                    NormalizedName = Roles.User.ToUpper()
                 }
             );
         }

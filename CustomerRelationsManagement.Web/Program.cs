@@ -5,6 +5,8 @@ using AutoMapper;
 using CustomerRelationsManagement.Web.Configurations;
 using CustomerRelationsManagement.Web.Contracts;
 using CustomerRelationsManagement.Web.Repositories;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using CustomerRelationsManagement.Web.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +20,8 @@ builder.Services.AddDefaultIdentity<Employee>(options => options.SignIn.RequireC
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddTransient<IEmailSender>(s => new EmailSender("localhost", 25, "noreply@gmail.com"));
 
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<IClientRepository, ClientRepository>();
