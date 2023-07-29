@@ -1,6 +1,7 @@
 ﻿using CustomerRelationsManagement.Web.Configurations.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using CustomerRelationsManagement.Web.Models;
 
 namespace CustomerRelationsManagement.Web.Data
 {
@@ -20,5 +21,9 @@ namespace CustomerRelationsManagement.Web.Data
         }
 
         public DbSet<Client> Clients { get; set; }
+        public DbSet<Deal> Deals { get; set; }
+
+        public DbSet<LeaveType> LeaveTypes { get; set; }
+        public DbSet<LeaveAllocation> LeaveAllocations { get; set;}
     }
 }

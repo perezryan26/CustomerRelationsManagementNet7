@@ -4,6 +4,7 @@ using CustomerRelationsManagement.Web.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CustomerRelationsManagement.Web.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230724180653_employeeLeave")]
+    partial class employeeLeave
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -182,7 +185,7 @@ namespace CustomerRelationsManagement.Web.Data.Migrations
                         {
                             Id = "87d97800-99c0-4df4-b06e-fe094e99c111",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "c104c708-1549-48dd-80a2-b1f38b41741f",
+                            ConcurrencyStamp = "043170e0-e27a-42ae-85c2-e89c5bd6fade",
                             DateJoined = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DateOfBirth = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "admin@email.com",
@@ -192,9 +195,9 @@ namespace CustomerRelationsManagement.Web.Data.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@EMAIL.COM",
                             NormalizedUserName = "ADMIN@EMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEIV7g0KQglgAEk1p+0eDJcw6PLnnKgNs/y8pP3IPYMNe+tTumAR2n6i8QRhKk7eXNQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEHwBdtpgHZNS28kN25TcHBGYq5K29ZMHROn7Z+atgeBLHfdivWSb1QWm9w4S/4af9g==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "84c4c254-e511-427b-8321-00dac2dbfe1d",
+                            SecurityStamp = "2f34b503-0c6f-44b0-9111-2a455323fa72",
                             TwoFactorEnabled = false,
                             UserName = "admin@email.com"
                         });
@@ -222,9 +225,6 @@ namespace CustomerRelationsManagement.Web.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("NumberOfDays")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Period")
                         .HasColumnType("int");
 
                     b.HasKey("Id");

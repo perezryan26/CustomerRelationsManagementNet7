@@ -12,7 +12,13 @@ namespace CustomerRelationsManagement.Web.Configurations
         public MapperConfig()
         {
             CreateMap<Client, ClientViewModel>().ReverseMap();
-            
+            CreateMap<Deal, DealViewModel>().ReverseMap();
+
+            CreateMap<LeaveType, LeaveTypeViewModel>().ReverseMap();
+            CreateMap<Employee, EmployeeListViewModel>().ReverseMap();
+            CreateMap<Employee, EmployeeAllocationViewModel>().ReverseMap();
+            CreateMap<LeaveAllocation, LeaveAllocationViewModel>().ReverseMap();
+            CreateMap<LeaveAllocation, LeaveAllocationEditViewModel>().ReverseMap();
         }
     }
 }

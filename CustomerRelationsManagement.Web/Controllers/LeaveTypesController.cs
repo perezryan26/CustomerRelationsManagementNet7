@@ -6,46 +6,46 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using CustomerRelationsManagement.Web.Data;
+using CustomerRelationsManagement.Web.Contracts;
 using AutoMapper;
 using CustomerRelationsManagement.Web.Models;
-using CustomerRelationsManagement.Web.Contracts;
-using Microsoft.AspNetCore.Authorization;
-using CustomerRelationsManagement.Web.Constants;
+using CustomerRelationsManagement.Web.Repositories;
 
 namespace CustomerRelationsManagement.Web.Controllers
 {
-    [Authorize(Roles = Roles.Administrator)]
-    public class ClientController : Controller
+    public class LeaveTypesController : Controller
     {
-        private readonly IClientRepository clientRepository;
+        private readonly ILeaveTypeRepository leaveTypeRepository;
         private readonly IMapper mapper;
+        private readonly ILeaveAllocationRepository leaveAllocationRepository;
 
-        public ClientController(IClientRepository clientRepository
-            , IMapper mapper)
+        public LeaveTypesController(ILeaveTypeRepository leaveTypeRepository,
+            IMapper mapper, ILeaveAllocationRepository leaveAllocationRepository)
         {
-            this.clientRepository = clientRepository;
+            this.leaveTypeRepository = leaveTypeRepository;
             this.mapper = mapper;
+            this.leaveAllocationRepository = leaveAllocationRepository;
         }
 
         // GET: Client
         public async Task<IActionResult> Index()
         {
-            return View(mapper.Map<List<ClientViewModel>>(await clientRepository.GetAllAsync()));
+            return View(mapper.Map<List<LeaveTypeViewModel>>(await leaveTypeRepository.GetAllAsync()));
         }
 
         // GET: Client/Details/5
         public async Task<IActionResult> Details(int? id)
         {
 
-            var client = await clientRepository.GetAsync(id);
-            
-            if (client == null)
+            var leaveType = await leaveTypeRepository.GetAsync(id);
+
+            if (leaveType == null)
             {
                 return NotFound();
             }
 
-            var clientViewModel = mapper.Map<ClientViewModel>(client);
-            return View(clientViewModel);
+            var leaveTypeViewModel = mapper.Map<LeaveTypeViewModel>(leaveType);
+            return View(leaveTypeViewModel);
         }
 
         // GET: Client/Create
@@ -59,28 +59,28 @@ namespace CustomerRelationsManagement.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(ClientViewModel clientViewModel)
+        public async Task<IActionResult> Create(LeaveTypeViewModel leaveTypeViewModel)
         {
             if (ModelState.IsValid)
             {
-                var client = mapper.Map<Client>(clientViewModel);
-                await clientRepository.AddAsync(client);
+                var leaveType = mapper.Map<LeaveType>(leaveTypeViewModel);
+                await leaveTypeRepository.AddAsync(leaveType);
                 return RedirectToAction(nameof(Index));
             }
-            return View(clientViewModel);
+            return View(leaveTypeViewModel);
         }
 
         // GET: Client/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            var client = await clientRepository.GetAsync(id);
-            if (client == null)
+            var leaveType = await leaveTypeRepository.GetAsync(id);
+            if (leaveType == null)
             {
                 return NotFound();
             }
 
-            var clientViewModel = mapper.Map<ClientViewModel>(client);
-            return View(clientViewModel);
+            var leaveTypeViewModel = mapper.Map<LeaveTypeViewModel>(leaveType);
+            return View(leaveTypeViewModel);
         }
 
         // POST: Client/Edit/5
@@ -88,9 +88,9 @@ namespace CustomerRelationsManagement.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, ClientViewModel clientViewModel)
+        public async Task<IActionResult> Edit(int id, LeaveTypeViewModel leaveTypeViewModel)
         {
-            if (id != clientViewModel.Id)
+            if (id != leaveTypeViewModel.Id)
             {
                 return NotFound();
             }
@@ -99,12 +99,12 @@ namespace CustomerRelationsManagement.Web.Controllers
             {
                 try
                 {
-                    var client = mapper.Map<Client>(clientViewModel);
-                    await clientRepository.UpdateAsync(client);
+                    var leaveType = mapper.Map<LeaveType>(leaveTypeViewModel);
+                    await leaveTypeRepository.UpdateAsync(leaveType);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!await clientRepository.Exists(clientViewModel.Id))
+                    if (!await leaveTypeRepository.Exists(leaveTypeViewModel.Id))
                     {
                         return NotFound();
                     }
@@ -115,26 +115,24 @@ namespace CustomerRelationsManagement.Web.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(clientViewModel);
-        } 
+            return View(leaveTypeViewModel);
+        }
 
         // POST: Client/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            await clientRepository.DeleteAsync(id);
+            await leaveTypeRepository.DeleteAsync(id);
             return RedirectToAction(nameof(Index));
         }
 
-        /*
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateDeal(int id)
+        public async Task<IActionResult> AllocateLeave(int id)
         {
-            await dealRepository.Deal(id);
+            await leaveAllocationRepository.LeaveAllocation(id);
             return RedirectToAction(nameof(Index));
         }
-        */
     }
 }

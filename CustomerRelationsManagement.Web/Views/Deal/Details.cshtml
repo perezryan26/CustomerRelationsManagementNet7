@@ -1,0 +1,47 @@
+﻿@model CustomerRelationsManagement.Web.Models.DealViewModel
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details of Deal @Model.Title</h1>
+
+<div>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-5">
+            @Html.DisplayNameFor(model => model.Title)
+        </dt>
+        <dd class = "col-sm-7">
+            @Html.DisplayFor(model => model.Title)
+        </dd>
+        <dt class = "col-sm-5">
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+        <dd class = "col-sm-7">
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+        <dt class = "col-sm-5">
+            @Html.DisplayNameFor(model => model.Amount)
+        </dt>
+        <dd class = "col-sm-7">
+            @Html.DisplayFor(model => model.Amount)
+        </dd>
+        <dt class = "col-sm-5">
+            @Html.DisplayNameFor(model => model.Status)
+        </dt>
+        <dd class = "col-sm-7">
+            @Html.DisplayFor(model => model.Status)
+        </dd>
+        <dt class = "col-sm-5">
+            @Html.DisplayNameFor(model => model.DateClosed)
+        </dt>
+        <dd class = "col-sm-7">
+            @Html.DisplayFor(model => model.DateClosed)
+    </dl>
+</div>
+<div>
+    <a asp-action="Index" class="btn btn-dark">Back to List</a>
+    <a asp-action="Edit" class="btn btn-warning" asp-route-id="@Model?.Id">Edit</a>
+</div>
+

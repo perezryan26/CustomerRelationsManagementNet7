@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using CustomerRelationsManagement.Web.Data;
+using System.ComponentModel.DataAnnotations;
 
 namespace CustomerRelationsManagement.Web.Models
 {
@@ -15,5 +16,6 @@ namespace CustomerRelationsManagement.Web.Models
         [Required]
         public string Email { get; set; }
         public string Phone { get; set; }
+        //public virtual ICollection<Deal> Deals { get; set; }
     }
 }

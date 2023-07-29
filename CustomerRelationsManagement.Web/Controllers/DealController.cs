@@ -6,91 +6,101 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using CustomerRelationsManagement.Web.Data;
+using CustomerRelationsManagement.Web.Constants;
+using Microsoft.AspNetCore.Authorization;
+using CustomerRelationsManagement.Web.Contracts;
 using AutoMapper;
 using CustomerRelationsManagement.Web.Models;
-using CustomerRelationsManagement.Web.Contracts;
-using Microsoft.AspNetCore.Authorization;
-using CustomerRelationsManagement.Web.Constants;
+using CustomerRelationsManagement.Web.Repositories;
 
 namespace CustomerRelationsManagement.Web.Controllers
 {
     [Authorize(Roles = Roles.Administrator)]
-    public class ClientController : Controller
+    public class DealController : Controller
     {
+        private readonly IDealRepository dealRepository;
         private readonly IClientRepository clientRepository;
         private readonly IMapper mapper;
 
-        public ClientController(IClientRepository clientRepository
+        public DealController(IDealRepository dealRepository
+            , IClientRepository clientRepository
             , IMapper mapper)
         {
+
             this.clientRepository = clientRepository;
+            this.dealRepository = dealRepository;
             this.mapper = mapper;
         }
 
-        // GET: Client
+        // GET: Deal
         public async Task<IActionResult> Index()
         {
-            return View(mapper.Map<List<ClientViewModel>>(await clientRepository.GetAllAsync()));
+            var deals = await dealRepository.GetAllAsync();
+            var dealViewModels = mapper.Map<List<DealViewModel>>(deals);
+            return View(dealViewModels);
+            //return View(mapper.Map<List<DealViewModel>>(await dealRepository.GetAllAsync()));
         }
 
-        // GET: Client/Details/5
+        // GET: Deal/Details/5
         public async Task<IActionResult> Details(int? id)
         {
+            var deal = await dealRepository.GetAsync(id);
 
-            var client = await clientRepository.GetAsync(id);
-            
-            if (client == null)
+            if (deal == null)
             {
                 return NotFound();
             }
 
-            var clientViewModel = mapper.Map<ClientViewModel>(client);
-            return View(clientViewModel);
+            var dealViewModel = mapper.Map<DealViewModel>(deal);
+            return View(dealViewModel);
         }
 
-        // GET: Client/Create
-        public IActionResult Create()
+        // GET: Deal/Create
+        public async Task<IActionResult> Create()
         {
+            //List<Client> clients = await clientRepository.GetAllAsync();
+            //ViewBag.Clients = clients;
+            //ViewBag.Clients = clientRepository.GetAllAsync();
             return View();
         }
 
-        // POST: Client/Create
+        // POST: Deal/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(ClientViewModel clientViewModel)
+        public async Task<IActionResult> Create(DealViewModel dealViewModel)
         {
             if (ModelState.IsValid)
             {
-                var client = mapper.Map<Client>(clientViewModel);
-                await clientRepository.AddAsync(client);
+                var deal = mapper.Map<Deal>(dealViewModel);
+                await dealRepository.AddAsync(deal);
                 return RedirectToAction(nameof(Index));
             }
-            return View(clientViewModel);
+            return View(dealViewModel);
         }
 
-        // GET: Client/Edit/5
+        // GET: Deal/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            var client = await clientRepository.GetAsync(id);
-            if (client == null)
+            var deal = await dealRepository.GetAsync(id);
+            if (deal == null)
             {
                 return NotFound();
             }
 
-            var clientViewModel = mapper.Map<ClientViewModel>(client);
-            return View(clientViewModel);
+            var dealViewModel = mapper.Map<DealViewModel>(deal);
+            return View(dealViewModel);
         }
 
-        // POST: Client/Edit/5
+        // POST: Deal/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, ClientViewModel clientViewModel)
+        public async Task<IActionResult> Edit(int id, DealViewModel dealViewModel)
         {
-            if (id != clientViewModel.Id)
+            if (id != dealViewModel.Id)
             {
                 return NotFound();
             }
@@ -99,12 +109,12 @@ namespace CustomerRelationsManagement.Web.Controllers
             {
                 try
                 {
-                    var client = mapper.Map<Client>(clientViewModel);
-                    await clientRepository.UpdateAsync(client);
+                    var deal = mapper.Map<Deal>(dealViewModel);
+                    await dealRepository.UpdateAsync(deal);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!await clientRepository.Exists(clientViewModel.Id))
+                    if (!await dealRepository.Exists(dealViewModel.Id))
                     {
                         return NotFound();
                     }
@@ -115,26 +125,16 @@ namespace CustomerRelationsManagement.Web.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(clientViewModel);
-        } 
+            return View(dealViewModel);
+        }
 
-        // POST: Client/Delete/5
+        // POST: Deal/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            await clientRepository.DeleteAsync(id);
+            await dealRepository.DeleteAsync(id);
             return RedirectToAction(nameof(Index));
         }
-
-        /*
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateDeal(int id)
-        {
-            await dealRepository.Deal(id);
-            return RedirectToAction(nameof(Index));
-        }
-        */
     }
 }
