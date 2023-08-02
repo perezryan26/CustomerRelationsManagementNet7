@@ -59,7 +59,7 @@ namespace CustomerRelationsManagement.Web.Repositories
                 return null;
             }
 
-            var employee = await userManager.FindByIdAsync(allocation.EmployeeId);
+            //var employee = await userManager.FindByIdAsync(allocation.EmployeeId);
 
             var model = mapper.Map<LeaveAllocationEditViewModel>(allocation);
             model.Employee = mapper.Map<EmployeeListViewModel>(await userManager.FindByIdAsync(allocation.EmployeeId));
@@ -104,6 +104,11 @@ namespace CustomerRelationsManagement.Web.Repositories
             await UpdateAsync(leaveAllocation);
 
             return true;
+        }
+
+        public async Task<LeaveAllocation?> GetEmployeeAllocation(string employeeId, int leaveTypeId)
+        {
+            return await context.LeaveAllocations.FirstOrDefaultAsync(q => q.EmployeeId == employeeId && q.LeaveTypeId == leaveTypeId);
         }
     }
 }

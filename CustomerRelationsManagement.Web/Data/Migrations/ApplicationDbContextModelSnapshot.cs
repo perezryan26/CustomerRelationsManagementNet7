@@ -54,7 +54,7 @@ namespace CustomerRelationsManagement.Web.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Clients");
+                    b.ToTable("Clients", (string)null);
                 });
 
             modelBuilder.Entity("CustomerRelationsManagement.Web.Data.Deal", b =>
@@ -95,7 +95,7 @@ namespace CustomerRelationsManagement.Web.Data.Migrations
 
                     b.HasIndex("ClientId");
 
-                    b.ToTable("Deals");
+                    b.ToTable("Deals", (string)null);
                 });
 
             modelBuilder.Entity("CustomerRelationsManagement.Web.Data.Employee", b =>
@@ -182,7 +182,7 @@ namespace CustomerRelationsManagement.Web.Data.Migrations
                         {
                             Id = "87d97800-99c0-4df4-b06e-fe094e99c111",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "c104c708-1549-48dd-80a2-b1f38b41741f",
+                            ConcurrencyStamp = "b750f9ba-98b2-4fba-9808-df36c2f588a4",
                             DateJoined = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DateOfBirth = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "admin@email.com",
@@ -192,9 +192,9 @@ namespace CustomerRelationsManagement.Web.Data.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@EMAIL.COM",
                             NormalizedUserName = "ADMIN@EMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEIV7g0KQglgAEk1p+0eDJcw6PLnnKgNs/y8pP3IPYMNe+tTumAR2n6i8QRhKk7eXNQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEGtIqUUi/JVUmo8o+eO6QRk+kv3YLQGWNlhgQtYISnNbFODzr60qX3c/unAtMbBvHg==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "84c4c254-e511-427b-8321-00dac2dbfe1d",
+                            SecurityStamp = "68f74e82-c2ad-4305-9cb8-e5df823ab7d8",
                             TwoFactorEnabled = false,
                             UserName = "admin@email.com"
                         });
@@ -231,7 +231,53 @@ namespace CustomerRelationsManagement.Web.Data.Migrations
 
                     b.HasIndex("LeaveTypeId");
 
-                    b.ToTable("LeaveAllocations");
+                    b.ToTable("LeaveAllocations", (string)null);
+                });
+
+            modelBuilder.Entity("CustomerRelationsManagement.Web.Data.LeaveRequest", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool?>("Approved")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("Cancelled")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateRequested")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("LeaveTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RequestComments")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RequestingEmployeeId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LeaveTypeId");
+
+                    b.ToTable("LeaveRequests", (string)null);
                 });
 
             modelBuilder.Entity("CustomerRelationsManagement.Web.Data.LeaveType", b =>
@@ -257,7 +303,7 @@ namespace CustomerRelationsManagement.Web.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("LeaveTypes");
+                    b.ToTable("LeaveTypes", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -430,6 +476,17 @@ namespace CustomerRelationsManagement.Web.Data.Migrations
                 });
 
             modelBuilder.Entity("CustomerRelationsManagement.Web.Data.LeaveAllocation", b =>
+                {
+                    b.HasOne("CustomerRelationsManagement.Web.Data.LeaveType", "LeaveType")
+                        .WithMany()
+                        .HasForeignKey("LeaveTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("LeaveType");
+                });
+
+            modelBuilder.Entity("CustomerRelationsManagement.Web.Data.LeaveRequest", b =>
                 {
                     b.HasOne("CustomerRelationsManagement.Web.Data.LeaveType", "LeaveType")
                         .WithMany()

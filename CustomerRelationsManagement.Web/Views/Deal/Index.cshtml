@@ -1,4 +1,4 @@
-﻿@model IEnumerable<CustomerRelationsManagement.Web.Models.DealViewModel>
+﻿@model DealOverviewViewModel
 
 @{
     ViewData["Title"] = "Index";
@@ -13,28 +13,25 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Title)
+                @Html.DisplayNameFor(model => model.Deals[0].Title)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Description)
+                @Html.DisplayNameFor(model => model.Deals[0].Description)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Amount)
+                @Html.DisplayNameFor(model => model.Deals[0].Amount)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Status)
+                @Html.DisplayNameFor(model => model.Deals[0].Status)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.ClientId)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Client.Name)
+                @Html.DisplayNameFor(model => model.Deals[0].Client)
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+@foreach (var item in Model.Deals) {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.Title)
@@ -47,9 +44,6 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Status)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Client.Id)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Client.Name)

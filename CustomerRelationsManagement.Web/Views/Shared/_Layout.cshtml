@@ -16,6 +16,8 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/CustomerRelationsManagement.Web.styles.css" asp-append-version="true" />
 
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+
     <link href="~/css/sb-admin-2.min.css" rel="stylesheet">
 </head>
 <body>
@@ -38,22 +40,25 @@
                         <li class="nav-item">
                             <a class="nav-link text-white" asp-area="" asp-controller="Deal" asp-action="Index">Deals</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" asp-area="" asp-controller="LeaveTypes" asp-action="Index">Staff</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                HR Resources
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" asp-area="" asp-controller="LeaveRequests" asp-action="MyLeave">My Leaves</a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="LeaveRequests" asp-action="Create">Request Leave</a></li>
+                            </ul>
                         </li>
                         @if (User.IsInRole(Roles.Administrator))
                         {
-                            <li class="nav-item">
-                                <a class="nav-link text-white" asp-area="" asp-controller="Employees" asp-action="Index">Employees</a>
-                            </li>
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href = "#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    Manage
+                                    Admin Dashboard
                                 </a>
                                 <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <li><a class="dropdown-item" asp-controller="Employees" asp-action="Index">Employees</a></li>
                                     <li><a class="dropdown-item" asp-controller="LeaveTypes" asp-action="Index">Leave Types</a></li>
-                                    <li><a class="dropdown-item" href="#">Leave Allocations</a></li>
-                                    <li><a class="dropdown-item" href="#">Leave Requests</a></li>
+                                    <li><a class="dropdown-item" asp-controller="LeaveRequests" asp-action="Index">Leave Requests</a></li>
                                 </ul>
                             </li>
                         }
@@ -76,13 +81,20 @@
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/sweetalert/sweetalert.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
     <script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.5/js/dataTables.bootstrap5.min.js"></script>
-    <script src="~/lib/sweetalert/sweetalert.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+    
+
+
     <script>
         $(function() {
             $('.table').DataTable();
+            $(".datepicker").datepicker({
+                dateFormat: "yy-mm-dd"
+            });
         });
     </script>
     <script src="~/js/site.js" asp-append-version="true"></script>

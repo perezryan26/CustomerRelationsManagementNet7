@@ -21,47 +21,46 @@ namespace CustomerRelationsManagement.Web.Controllers
         private readonly IDealRepository dealRepository;
         private readonly IClientRepository clientRepository;
         private readonly IMapper mapper;
+        private readonly ApplicationDbContext context;
 
         public DealController(IDealRepository dealRepository
             , IClientRepository clientRepository
-            , IMapper mapper)
+            , IMapper mapper, ApplicationDbContext context)
         {
 
             this.clientRepository = clientRepository;
             this.dealRepository = dealRepository;
             this.mapper = mapper;
+            this.context = context;
         }
 
         // GET: Deal
         public async Task<IActionResult> Index()
         {
-            var deals = await dealRepository.GetAllAsync();
-            var dealViewModels = mapper.Map<List<DealViewModel>>(deals);
-            return View(dealViewModels);
+            var model = await dealRepository.GetDealOverviewList();
+            return View(model);
             //return View(mapper.Map<List<DealViewModel>>(await dealRepository.GetAllAsync()));
         }
 
         // GET: Deal/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            var deal = await dealRepository.GetAsync(id);
-
-            if (deal == null)
-            {
-                return NotFound();
-            }
-
-            var dealViewModel = mapper.Map<DealViewModel>(deal);
-            return View(dealViewModel);
+            var model = await dealRepository.GetDeal(id);
+            return View(model);
         }
 
         // GET: Deal/Create
-        public async Task<IActionResult> Create()
+        public IActionResult Create()
         {
             //List<Client> clients = await clientRepository.GetAllAsync();
             //ViewBag.Clients = clients;
             //ViewBag.Clients = clientRepository.GetAllAsync();
-            return View();
+
+            var model = new DealCreateViewModel
+            {
+                Clients = new SelectList(context.Clients, "Id", "Name")
+            };
+            return View(model);
         }
 
         // POST: Deal/Create
@@ -69,28 +68,35 @@ namespace CustomerRelationsManagement.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(DealViewModel dealViewModel)
+        public async Task<IActionResult> Create(DealCreateViewModel model)
         {
-            if (ModelState.IsValid)
+            try
             {
-                var deal = mapper.Map<Deal>(dealViewModel);
-                await dealRepository.AddAsync(deal);
-                return RedirectToAction(nameof(Index));
+                if (ModelState.IsValid)
+                {
+                    await dealRepository.CreateDeal(model);
+                    return RedirectToAction(nameof(Index));
+                }
             }
-            return View(dealViewModel);
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, "An error has occured please try again");
+            }
+            model.Clients = new SelectList(context.Clients, "Id", "Name", model.ClientId);
+            return View(model);
         }
 
         // GET: Deal/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            var deal = await dealRepository.GetAsync(id);
-            if (deal == null)
+            var model = await dealRepository.GetDeal(id);
+            if (model == null)
             {
                 return NotFound();
             }
 
-            var dealViewModel = mapper.Map<DealViewModel>(deal);
-            return View(dealViewModel);
+            ViewData["ClientId"] = new SelectList(context.Clients, "Id", "Name", model.ClientId);
+            return View(model);
         }
 
         // POST: Deal/Edit/5
@@ -98,9 +104,9 @@ namespace CustomerRelationsManagement.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, DealViewModel dealViewModel)
+        public async Task<IActionResult> Edit(int id, DealViewModel model)
         {
-            if (id != dealViewModel.Id)
+            if (id != model.Id)
             {
                 return NotFound();
             }
@@ -109,12 +115,12 @@ namespace CustomerRelationsManagement.Web.Controllers
             {
                 try
                 {
-                    var deal = mapper.Map<Deal>(dealViewModel);
+                    var deal = mapper.Map<Deal>(model);
                     await dealRepository.UpdateAsync(deal);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!await dealRepository.Exists(dealViewModel.Id))
+                    if (!await dealRepository.Exists(model.Id))
                     {
                         return NotFound();
                     }
@@ -125,7 +131,8 @@ namespace CustomerRelationsManagement.Web.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(dealViewModel);
+            ViewData["ClientId"] = new SelectList(context.Clients, "Id", "Name", model.ClientId);
+            return View(model);
         }
 
         // POST: Deal/Delete/5

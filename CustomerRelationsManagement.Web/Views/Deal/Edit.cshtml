@@ -1,10 +1,10 @@
 ﻿@model CustomerRelationsManagement.Web.Models.DealViewModel
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit Deal";
 }
 
-<h1>Edit @Model.Title</h1>
+<h1>Edit Deal @Model.Title</h1>
 
 <hr />
 <div class="row">
@@ -27,19 +27,9 @@
                 <span asp-validation-for="Amount" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Status" class="control-label"></label>
-                <select asp-for="Status" class="form-control"></select>
-                <span asp-validation-for="Status" class="text-danger"></span>
-            </div>
-            <div class="form-group">
                 <label asp-for="ClientId" class="control-label"></label>
                 <select asp-for="ClientId" class="form-control" asp-items="ViewBag.ClientId"></select>
                 <span asp-validation-for="ClientId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="DateClosed" class="control-label"></label>
-                <input asp-for="DateClosed" class="form-control" />
-                <span asp-validation-for="DateClosed" class="text-danger"></span>
             </div>
             <input type="hidden" asp-for="Id" />
             <br/>

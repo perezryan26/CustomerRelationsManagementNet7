@@ -19,6 +19,11 @@ namespace CustomerRelationsManagement.Web.Configurations
             CreateMap<Employee, EmployeeAllocationViewModel>().ReverseMap();
             CreateMap<LeaveAllocation, LeaveAllocationViewModel>().ReverseMap();
             CreateMap<LeaveAllocation, LeaveAllocationEditViewModel>().ReverseMap();
+
+            CreateMap<LeaveRequest, LeaveRequestCreateViewModel>().ReverseMap();
+            CreateMap<LeaveRequest, LeaveRequestViewModel>().ReverseMap();
+
+            CreateMap<Deal, DealCreateViewModel>().ReverseMap();
         }
     }
 }

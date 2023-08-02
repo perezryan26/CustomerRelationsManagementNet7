@@ -3,7 +3,6 @@ using CustomerRelationsManagement.Web.Constants;
 using CustomerRelationsManagement.Web.Contracts;
 using CustomerRelationsManagement.Web.Data;
 using CustomerRelationsManagement.Web.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -71,7 +70,7 @@ namespace CustomerRelationsManagement.Web.Controllers
                 ModelState.AddModelError(string.Empty, "An error has occurred. Please try again later.");
             }
             model.Employee = mapper.Map<EmployeeListViewModel>(await userManager.FindByIdAsync(model.EmployeeId));
-            model.LeaveType = mapper.Map<LeaveTypeViewModel >(await leaveTypeRepository.GetAsync(model.LeaveTypeId));
+            model.LeaveType = mapper.Map<LeaveTypeViewModel>(await leaveTypeRepository.GetAsync(model.LeaveTypeId));
             return View(model);
         }
     }

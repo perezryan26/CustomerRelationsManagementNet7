@@ -13,10 +13,9 @@ namespace CustomerRelationsManagement.Web.Data
         public DealStatus Status { get; set; }
 
         //Relationship with Client entity
-        [Required]
-        [ForeignKey("Client")]
-        public int ClientId { get; set; }
+        [ForeignKey("ClientId")]
         public Client Client { get; set; }
+        public int ClientId { get; set; }
 
         //Additional Properties
         public DateTime? DateClosed { get; set; }
@@ -24,7 +23,7 @@ namespace CustomerRelationsManagement.Web.Data
         public Deal()
         {
             Status = DealStatus.Open;
-            DateCreated = DateTime.Now;
+            //DateCreated = DateTime.Now;
         }
     }
 }

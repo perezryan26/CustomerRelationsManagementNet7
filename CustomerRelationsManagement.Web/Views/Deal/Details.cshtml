@@ -27,17 +27,18 @@
         <dd class = "col-sm-7">
             @Html.DisplayFor(model => model.Amount)
         </dd>
+        <dt class="col-sm-5">
+            @Html.DisplayNameFor(model => model.Client)
+        </dt>
+        <dd class="col-sm-7">
+            @Html.DisplayFor(model => model.Client.Name)
+        </dd>
         <dt class = "col-sm-5">
             @Html.DisplayNameFor(model => model.Status)
         </dt>
         <dd class = "col-sm-7">
             @Html.DisplayFor(model => model.Status)
         </dd>
-        <dt class = "col-sm-5">
-            @Html.DisplayNameFor(model => model.DateClosed)
-        </dt>
-        <dd class = "col-sm-7">
-            @Html.DisplayFor(model => model.DateClosed)
     </dl>
 </div>
 <div>
