@@ -4,6 +4,7 @@ using CustomerRelationsManagement.Web.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CustomerRelationsManagement.Web.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230804005507_positionSet")]
+    partial class positionSet
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -116,9 +119,6 @@ namespace CustomerRelationsManagement.Web.Data.Migrations
                     b.Property<DateTime>("DateOfBirth")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Department")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -182,7 +182,7 @@ namespace CustomerRelationsManagement.Web.Data.Migrations
                         {
                             Id = "87d97800-99c0-4df4-b06e-fe094e99c111",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "c645fa21-3019-41b2-8cf4-b3e4d31ea2db",
+                            ConcurrencyStamp = "b4c85785-1f29-46f2-b0a9-a17b53b819ed",
                             DateJoined = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DateOfBirth = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "admin@email.com",
@@ -192,9 +192,9 @@ namespace CustomerRelationsManagement.Web.Data.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@EMAIL.COM",
                             NormalizedUserName = "ADMIN@EMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEDBlvKurOxtLS3P++Bu8H4ae3bNfTx4mKBSfcyVB69GyeVOLd+eAAA/kc9vsq/RTfQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEAN1Fj+KRFkV/cb656pMNiFEJ4h6HJ3qVMiPzmKUCJE9m5g8w0DUyhA6ArrsL9h4Cw==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "b8707ab1-fce3-4e3f-83ad-21a446023871",
+                            SecurityStamp = "76b9ee4c-5783-475a-a26f-267f4cb15a4a",
                             TwoFactorEnabled = false,
                             UserName = "admin@email.com"
                         });
@@ -318,7 +318,7 @@ namespace CustomerRelationsManagement.Web.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("Names")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

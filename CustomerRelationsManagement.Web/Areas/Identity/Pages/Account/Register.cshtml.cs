@@ -20,6 +20,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using CustomerRelationsManagement.Web.Constants;
+using CustomerRelationsManagement.Web.Data.Migrations;
 
 namespace CustomerRelationsManagement.Web.Areas.Identity.Pages.Account
 {
@@ -133,6 +134,14 @@ namespace CustomerRelationsManagement.Web.Areas.Identity.Pages.Account
                 user.FirstName = Input.Firstname;
                 user.LastName = Input.Lastname; 
                 user.DateOfBirth = Input.DateOfBirth;
+                user.Department = "None";
+                /*user.Position = new Position
+                {
+                    Name = "New Hire",
+                    Description = "Employee has not yet been assigned their position in the system",
+                    Salary = 0
+                };*/
+                //user.Department = "None";
 
                 var result = await _userManager.CreateAsync(user, Input.Password);
 
