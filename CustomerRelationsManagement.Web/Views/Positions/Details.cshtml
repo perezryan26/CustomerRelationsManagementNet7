@@ -1,0 +1,37 @@
+﻿@model CustomerRelationsManagement.Web.Models.PositionViewModel
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-5">
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd class = "col-sm-7">
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt class = "col-sm-5">
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+        <dd class = "col-sm-7">
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+        <dt class = "col-sm-5">
+            @Html.DisplayNameFor(model => model.Salary)
+        </dt>
+        <dd class = "col-sm-7">
+            @Html.DisplayFor(model => model.Salary)
+        </dd>
+    </dl>
+</div>
+<br />
+<div>
+    <a asp-action="Index" class="btn btn-dark">Back to List</a>
+    <a asp-action="Edit" class="btn btn-warning" asp-route-id="@Model?.Id">Edit</a>
+    
+</div>

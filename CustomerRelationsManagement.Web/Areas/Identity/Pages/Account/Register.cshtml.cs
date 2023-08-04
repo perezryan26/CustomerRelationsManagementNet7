@@ -21,6 +21,8 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using CustomerRelationsManagement.Web.Constants;
 using CustomerRelationsManagement.Web.Data.Migrations;
+using Microsoft.CodeAnalysis.Options;
+using Microsoft.EntityFrameworkCore;
 
 namespace CustomerRelationsManagement.Web.Areas.Identity.Pages.Account
 {
@@ -32,13 +34,14 @@ namespace CustomerRelationsManagement.Web.Areas.Identity.Pages.Account
         private readonly IUserEmailStore<Employee> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly ApplicationDbContext context;
 
         public RegisterModel(
             UserManager<Employee> userManager,
             IUserStore<Employee> userStore,
             SignInManager<Employee> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender, ApplicationDbContext context)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -46,6 +49,7 @@ namespace CustomerRelationsManagement.Web.Areas.Identity.Pages.Account
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            this.context = context;
         }
 
         /// <summary>
@@ -134,13 +138,8 @@ namespace CustomerRelationsManagement.Web.Areas.Identity.Pages.Account
                 user.FirstName = Input.Firstname;
                 user.LastName = Input.Lastname; 
                 user.DateOfBirth = Input.DateOfBirth;
-                user.Department = "None";
-                /*user.Position = new Position
-                {
-                    Name = "New Hire",
-                    Description = "Employee has not yet been assigned their position in the system",
-                    Salary = 0
-                };*/
+                user.Department = DepartmentType.Unassigned;
+                user.Position = await context.Positions.FindAsync(1);
                 //user.Department = "None";
 
                 var result = await _userManager.CreateAsync(user, Input.Password);

@@ -24,6 +24,8 @@ namespace CustomerRelationsManagement.Web.Configurations
             CreateMap<LeaveRequest, LeaveRequestViewModel>().ReverseMap();
 
             CreateMap<Deal, DealCreateViewModel>().ReverseMap();
+
+            CreateMap<Position, PositionViewModel>().ReverseMap();
         }
     }
 }

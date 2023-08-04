@@ -1,0 +1,29 @@
+﻿
+@{
+    ViewData["Title"] = "AssignDepartment";
+}
+
+<h1>Assign Department</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="AssignDepartment">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" name="employeeId" value="@ViewBag.EmployeeId" />
+            <label for="Department">Select Department:</label>
+            <select id="Department" name="department">
+                @foreach (var department in ViewBag.Departments)
+                {
+                    <option value="@department">@department</option>
+                }
+            </select>
+            <br />
+            <br />
+            <div class="form-group">
+                <a asp-action="Index" class="btn btn-dark">Back to List</a>
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>

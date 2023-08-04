@@ -13,15 +13,16 @@ namespace CustomerRelationsManagement.Web.Configurations.Entities
             builder.HasData(
                 new Employee
                 {
-                    Id = "87d97800-99c0-4df4-b06e-fe094e99c111",
-                    Email = "admin@email.com",
-                    NormalizedEmail = "ADMIN@EMAIL.COM",
-                    UserName = "admin@email.com",
-                    NormalizedUserName = "ADMIN@EMAIL.COM",
+                    Id = "87d97800-99c0-4df4-b011-fe094e99c111",
+                    Email = "admin@admin.com",
+                    NormalizedEmail = "ADMIN@ADMIN.COM",
+                    UserName = "admin@admin.com",
+                    NormalizedUserName = "ADMIN@ADMIN.COM",
                     FirstName = "System",
                     LastName = "Admin",
                     PasswordHash = hasher.HashPassword(null, "Rperez26@"),
-                    EmailConfirmed = true
+                    EmailConfirmed = true,
+                    PositionId = 1
                 }
             );
         }

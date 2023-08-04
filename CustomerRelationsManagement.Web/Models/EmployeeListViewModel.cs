@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using CustomerRelationsManagement.Web.Data;
+using System.ComponentModel.DataAnnotations;
+using System.Drawing;
 
 namespace CustomerRelationsManagement.Web.Models
 {
@@ -17,5 +19,7 @@ namespace CustomerRelationsManagement.Web.Models
 
         [Display(Name = "Email Address")]
         public string Email { get; set; }
+        public string Department { get; set; }
+        public Position? Position { get; set; }
     }
 }

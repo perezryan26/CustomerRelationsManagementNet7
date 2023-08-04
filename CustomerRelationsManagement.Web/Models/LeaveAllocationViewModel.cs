@@ -17,5 +17,6 @@ namespace CustomerRelationsManagement.Web.Models
         public int Period { get; set; }
 
         public LeaveTypeViewModel? LeaveType { get; set; }
+        public PositionViewModel? Position { get; set; }
     }
 }

@@ -12,7 +12,7 @@ namespace CustomerRelationsManagement.Web.Configurations.Entities
                 new IdentityUserRole<string>
                 {
                     RoleId = "87d97800-99b0-4df4-b06e-fe694e99c433",
-                    UserId = "87d97800-99c0-4df4-b06e-fe094e99c111"
+                    UserId = "87d97800-99c0-4df4-b011-fe094e99c111"
                 });
         }
     }

@@ -4,6 +4,7 @@ using CustomerRelationsManagement.Web.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CustomerRelationsManagement.Web.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230804012754_employeeExtended")]
+    partial class employeeExtended
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -185,24 +188,24 @@ namespace CustomerRelationsManagement.Web.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "87d97800-99c0-4df4-b011-fe094e99c111",
+                            Id = "87d97800-99c0-4df4-b06e-fe094e99c111",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "9fd8b4b5-bda0-4f49-ba90-59c2ec4f2e3e",
+                            ConcurrencyStamp = "ab909173-8238-4c13-9f18-dc3e1e366e93",
                             DateJoined = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DateOfBirth = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Email = "admin@admin.com",
+                            Email = "admin@email.com",
                             EmailConfirmed = true,
                             FirstName = "System",
                             LastName = "Admin",
                             LockoutEnabled = false,
-                            NormalizedEmail = "ADMIN@ADMIN.COM",
-                            NormalizedUserName = "ADMIN@ADMIN.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEAzz2jPelXYcw7abvZtJ7vZxIn9pgApoAAcZW0urgQT7IdZ1nTEn9hF13W33ViT6Sw==",
+                            NormalizedEmail = "ADMIN@EMAIL.COM",
+                            NormalizedUserName = "ADMIN@EMAIL.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAELySE+9mhZqPc7xZha5R8ABUPTy/fb1dj8/ZEtpSdkVvjq/dZUbJtZoTsC/1DsXkkQ==",
                             PhoneNumberConfirmed = false,
-                            PositionId = 1,
-                            SecurityStamp = "63985d43-e1bf-4813-b332-014550024a8b",
+                            PositionId = 0,
+                            SecurityStamp = "c9024855-04ab-4981-8bd3-ae7de34a2457",
                             TwoFactorEnabled = false,
-                            UserName = "admin@admin.com"
+                            UserName = "admin@email.com"
                         });
                 });
 
@@ -468,7 +471,7 @@ namespace CustomerRelationsManagement.Web.Data.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = "87d97800-99c0-4df4-b011-fe094e99c111",
+                            UserId = "87d97800-99c0-4df4-b06e-fe094e99c111",
                             RoleId = "87d97800-99b0-4df4-b06e-fe694e99c433"
                         });
                 });

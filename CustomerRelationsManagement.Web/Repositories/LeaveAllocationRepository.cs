@@ -40,7 +40,11 @@ namespace CustomerRelationsManagement.Web.Repositories
                 .Where(q => q.EmployeeId == employeeId)
                 .ToListAsync();
 
-            var employee = await userManager.FindByIdAsync(employeeId);
+            //var employee = await userManager.FindByIdAsync(employeeId);
+
+            var employee = await context.Users
+               .Include(q => q.Position)
+               .FirstOrDefaultAsync(q => q.Id == employeeId);
 
             var employeeAllocationModel = mapper.Map<EmployeeAllocationViewModel>(employee);
             employeeAllocationModel.LeaveAllocations = mapper.Map<List<LeaveAllocationViewModel>>(allocations);
