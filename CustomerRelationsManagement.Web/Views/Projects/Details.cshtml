@@ -1,0 +1,58 @@
+﻿@model CustomerRelationsManagement.Web.Models.ProjectViewModel
+
+@{
+    ViewData["Title"] = "Project Details";
+}
+
+<h1>Project Details</h1>
+
+<div>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-5">
+            @Html.DisplayNameFor(model => model.IsComplete)
+        </dt>
+        @if (Model.IsComplete)
+        {
+            <dd class="col-sm-7">Complete</dd>
+        }
+        else
+        {
+            <dd class="col-sm-7">In-Progress</dd>
+        }
+        <dt class = "col-sm-5">
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd class = "col-sm-7">
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt class = "col-sm-5">
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+        <dd class = "col-sm-7">
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+        <dt class = "col-sm-5">
+            @Html.DisplayNameFor(model => model.DateCreated)
+        </dt>
+        <dd class = "col-sm-7">
+            @Html.DisplayFor(model => model.DateCreated)
+        </dd>
+        <dt class="col-sm-5">
+            @Html.DisplayNameFor(model => model.Employees)
+        </dt>
+        <dd class="col-sm-7">
+            <ul>
+                @foreach (var employee in Model.Employees)
+                {
+                    <li>@employee.FirstName @employee.LastName</li>
+                }
+            </ul>
+        </dd>
+    </dl>
+    
+</div>
+<div>
+    <a asp-action="Index" class="btn btn-dark">Back to List</a>
+    <a asp-action="Edit" class="btn btn-warning" asp-route-id="@Model?.Id">Edit</a>
+</div>

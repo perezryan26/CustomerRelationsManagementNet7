@@ -1,6 +1,6 @@
 ﻿
 @{
-    ViewData["Title"] = "AssignDepartment";
+    ViewData["Title"] = "Assign Department";
 }
 
 <h1>Assign Department</h1>
@@ -12,10 +12,10 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" name="employeeId" value="@ViewBag.EmployeeId" />
             <label for="Department">Select Department:</label>
-            <select id="Department" name="department">
+            <select id="Department" name="department" class="form-select">
                 @foreach (var department in ViewBag.Departments)
                 {
-                    <option value="@department">@department</option>
+                    <option value="@department.Text" selected="@department.Selected">@department.Text</option>
                 }
             </select>
             <br />

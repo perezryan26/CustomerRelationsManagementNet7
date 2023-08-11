@@ -1,0 +1,28 @@
+﻿@{
+    ViewData["Title"] = "Assign Position";
+}
+
+<h1>Assign Position</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="AssignPosition">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" name="employeeId" value="@ViewBag.EmployeeId" />
+            <label for="Position">Select Position:</label>
+            <select id="Position" name="positionId" class="form-select">
+                @foreach (var position in ViewBag.Positions)
+                {
+                    <option value="@position.Value" selected="@position.Selected">@position.Text</option>
+                }
+            </select>
+            <br />
+            <br />
+            <div class="form-group">
+                <a asp-action="Index" class="btn btn-dark">Back to List</a>
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>

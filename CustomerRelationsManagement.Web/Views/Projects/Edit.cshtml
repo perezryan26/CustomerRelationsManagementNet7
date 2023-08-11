@@ -1,0 +1,62 @@
+﻿@model CustomerRelationsManagement.Web.Models.ProjectViewModel
+
+@{
+    ViewData["Title"] = "Edit Project";
+}
+
+<h1>Edit Project</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label>Completion Status</label>
+                <div>
+                    <button type="button" class="btn btn-primary" onclick="setStatus(true)">Complete</button>
+                    <button type="button" class="btn btn-primary" onclick="setStatus(false)">In Progress</button>
+                    <input type="hidden" id="isCompleteInput" asp-for="IsComplete" />
+                </div>
+            </div>
+            <br />
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <br />
+            <div class="form-group">
+                <label asp-for="Description" class="control-label"></label>
+                <input asp-for="Description" class="form-control" />
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <br />
+            <div class="form-group">
+                <label>Team Members</label>
+                @foreach (var employee in Model.Employees)
+                {
+                    <div>
+                        <input type="checkbox" name="EmployeeIds" value="@employee.Id" id="employee_@employee.Id" checked="@(Model.EmployeeIds?.Contains(employee.Id) ?? false)" />
+                        <label for="employee_@employee.Id">@employee.FirstName @employee.LastName</label>
+                    </div>
+                }
+                <span asp-validation-for="EmployeeIds" class="text-danger"></span>
+            </div>
+            <br />
+            <div class="form-group">
+                <a asp-action="Index" class="btn btn-dark">Back to List</a>
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function setStatus(isComplete) {
+            document.getElementById("isCompleteInput").value = isComplete;
+        }
+    </script>
+}

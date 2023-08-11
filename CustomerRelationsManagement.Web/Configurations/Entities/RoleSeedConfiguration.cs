@@ -12,7 +12,7 @@ namespace CustomerRelationsManagement.Web.Configurations.Entities
             builder.HasData(
                 new IdentityRole
                 {
-                    Id = "87d97800-99b0-4df4-b06e-fe694e99c433",
+                    Id = "87d97869-99b0-4df4-b06e-fe694e99c433",
                     Name = Roles.Administrator,
                     NormalizedName = Roles.Administrator.ToUpper()
                 },

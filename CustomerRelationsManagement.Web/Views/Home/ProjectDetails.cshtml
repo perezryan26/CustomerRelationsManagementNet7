@@ -1,0 +1,20 @@
+﻿@model CustomerRelationsManagement.Web.Models.ProjectViewModel
+
+@{
+    ViewData["Title"] = "Project Details";
+}
+
+<h1>@Model.Name</h1>
+<h2>Description: @Model.Description</h2>
+<h2>Teammates</h2>
+<ul>
+    @foreach (var employee in Model.Employees)
+    {
+        <li>@employee.FirstName @employee.LastName</li>
+    }
+</ul>
+
+<div>
+    <hr />
+    <h1>Tasks</h1>
+</div>

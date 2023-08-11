@@ -40,7 +40,7 @@
                 @Html.DisplayFor(modelItem => item.Lastname)
             </td>
             <td>
-                    @Html.DisplayFor(modelItem => item.Email)
+                @Html.DisplayFor(modelItem => item.Email)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.DateJoined)
@@ -53,7 +53,7 @@
             </td>
             <td>
                 <a asp-action="ViewAllocations" class="btn btn-sm btn-primary" asp-route-id="@item.Id">View Allocations</a>
-                <a asp-action="AssignDepartment" class="btn btn-sm btn-secondary" asp-route-id="@item.Id">Assign Position</a>
+                <a asp-action="AssignPosition" class="btn btn-sm btn-secondary" asp-route-id="@item.Id">Assign Position</a>
                 <a asp-action="AssignDepartment" class="btn btn-sm btn-dark" asp-route-id="@item.Id">Assign Department</a>
             </td>
         </tr>

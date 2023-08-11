@@ -1,0 +1,19 @@
+﻿@model IEnumerable<CustomerRelationsManagement.Web.Models.ProjectViewModel>
+
+@{
+    ViewData["Title"] = "Projects View";
+}
+
+<div class="container">
+    <h1>Projects</h1>
+
+    @foreach (var project in Model)
+    {
+        <div class="card mb-2">
+            <div class="card-body">
+                <h5 class="card-title">@project.Name</h5>
+                <p class="card-text text-muted small">@project.Description</p>
+            </div>
+        </div>
+    }
+</div>

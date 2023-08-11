@@ -27,6 +27,8 @@ namespace CustomerRelationsManagement.Web.Data
         public DbSet<LeaveAllocation> LeaveAllocations { get; set;}
         public DbSet<LeaveRequest> LeaveRequests { get; set; }
         public DbSet<Position> Positions { get; set; }
-        public DbSet<CustomerRelationsManagement.Web.Models.EmployeeListViewModel> EmployeeListViewModel { get; set; } = default!;
+        public DbSet<Announcement> Announcements { get; set; }
+        public DbSet<Project> Projects { get; set; }
+        public DbSet<ProjectTask> ProjectTasks { get; set; }
     }
 }

@@ -22,6 +22,30 @@ namespace CustomerRelationsManagement.Web.Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("CustomerRelationsManagement.Web.Data.Announcement", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("DatePublished")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Announcements");
+                });
+
             modelBuilder.Entity("CustomerRelationsManagement.Web.Data.Client", b =>
                 {
                     b.Property<int>("Id")
@@ -185,22 +209,22 @@ namespace CustomerRelationsManagement.Web.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "87d97800-99c0-4df4-b011-fe094e99c111",
+                            Id = "87d97869-99c0-4df4-b011-fe094e99c111",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "9fd8b4b5-bda0-4f49-ba90-59c2ec4f2e3e",
+                            ConcurrencyStamp = "03068c77-9a5d-4d27-b75e-b8af3d6807df",
                             DateJoined = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DateOfBirth = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "admin@admin.com",
                             EmailConfirmed = true,
-                            FirstName = "System",
+                            FirstName = "Admin",
                             LastName = "Admin",
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@ADMIN.COM",
                             NormalizedUserName = "ADMIN@ADMIN.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEAzz2jPelXYcw7abvZtJ7vZxIn9pgApoAAcZW0urgQT7IdZ1nTEn9hF13W33ViT6Sw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEBBOH9WvzfRtnnZSsft1Oh+4NPsKXFUNB6uEzXjMlJup8rk5lieWbmuuHVU5FUC0hA==",
                             PhoneNumberConfirmed = false,
                             PositionId = 1,
-                            SecurityStamp = "63985d43-e1bf-4813-b332-014550024a8b",
+                            SecurityStamp = "390d4d8a-6311-488f-89f6-16ee247df76d",
                             TwoFactorEnabled = false,
                             UserName = "admin@admin.com"
                         });
@@ -336,6 +360,96 @@ namespace CustomerRelationsManagement.Web.Data.Migrations
                     b.ToTable("Positions");
                 });
 
+            modelBuilder.Entity("CustomerRelationsManagement.Web.Data.Project", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsComplete")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Projects");
+                });
+
+            modelBuilder.Entity("CustomerRelationsManagement.Web.Data.ProjectTask", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateDue")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EmployeeId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsComplete")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TaskPriority")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("ProjectTasks");
+                });
+
+            modelBuilder.Entity("EmployeeProject", b =>
+                {
+                    b.Property<string>("EmployeesId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("ProjectsId")
+                        .HasColumnType("int");
+
+                    b.HasKey("EmployeesId", "ProjectsId");
+
+                    b.HasIndex("ProjectsId");
+
+                    b.ToTable("EmployeeProject");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -365,7 +479,7 @@ namespace CustomerRelationsManagement.Web.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "87d97800-99b0-4df4-b06e-fe694e99c433",
+                            Id = "87d97869-99b0-4df4-b06e-fe694e99c433",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         },
@@ -468,8 +582,8 @@ namespace CustomerRelationsManagement.Web.Data.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = "87d97800-99c0-4df4-b011-fe094e99c111",
-                            RoleId = "87d97800-99b0-4df4-b06e-fe694e99c433"
+                            UserId = "87d97869-99c0-4df4-b011-fe094e99c111",
+                            RoleId = "87d97869-99b0-4df4-b06e-fe694e99c433"
                         });
                 });
 
@@ -536,6 +650,32 @@ namespace CustomerRelationsManagement.Web.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("LeaveType");
+                });
+
+            modelBuilder.Entity("CustomerRelationsManagement.Web.Data.ProjectTask", b =>
+                {
+                    b.HasOne("CustomerRelationsManagement.Web.Data.Project", "Project")
+                        .WithMany()
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Project");
+                });
+
+            modelBuilder.Entity("EmployeeProject", b =>
+                {
+                    b.HasOne("CustomerRelationsManagement.Web.Data.Employee", null)
+                        .WithMany()
+                        .HasForeignKey("EmployeesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CustomerRelationsManagement.Web.Data.Project", null)
+                        .WithMany()
+                        .HasForeignKey("ProjectsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

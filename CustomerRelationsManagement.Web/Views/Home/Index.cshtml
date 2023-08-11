@@ -1,8 +1,41 @@
-﻿@{
+﻿@model ProjectsAndAnnouncementsViewModel
+@{
     ViewData["Title"] = "Dashboard";
 }
 
 <div class="text-center">
     <h1 class="display-4">User Dashboard</h1>
     <p>Welcome to the Customer Relations Management System!</p>
+</div>
+
+<div class="container">
+    <h1>Announcements</h1>
+
+    @foreach (var announcement in Model.Announcements)
+    {
+        <div class="card mb-2">
+            <div class="card-body">
+                <h5 class="card-title">@announcement.Title</h5>
+                <p class="card-text text-muted small">@announcement.Description</p>
+            </div>
+        </div>
+    }
+</div>
+
+<br />
+
+<div class="container">
+    <h1>Projects</h1>
+
+    @foreach (var project in Model.Projects)
+    {
+        <a asp-controller="Home" asp-action="ProjectDetails" asp-route-projectId="@project.Id">
+            <div class="card mb-2">
+                <div class="card-body">
+                    <h5 class="card-title">@project.Name</h5>
+                    <p class="card-text text-muted small">@project.Description</p>
+                </div>
+            </div>
+        </a>
+    }
 </div>

@@ -1,0 +1,19 @@
+﻿@model IEnumerable<CustomerRelationsManagement.Web.Models.AnnouncementViewModel>
+
+@{
+    ViewData["Title"] = "_AnnouncementsView";
+}
+
+<div class="container">
+    <h1>Announcements</h1>
+
+    @foreach (var announcement in Model)
+    {
+        <div class="card mb-2">
+            <div class="card-body">
+                <h5 class="card-title">@announcement.Title</h5>
+                <p class="card-text text-muted small">@announcement.Description</p>
+            </div>
+        </div>
+    }
+</div>
