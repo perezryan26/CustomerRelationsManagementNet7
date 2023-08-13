@@ -7,49 +7,65 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using CustomerRelationsManagement.Web.Data;
 using CustomerRelationsManagement.Web.Models;
+using AutoMapper;
+using CustomerRelationsManagement.Web.Contracts;
+using CustomerRelationsManagement.Web.Repositories;
+using CustomerRelationsManagement.Web.Constants;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.CodeAnalysis;
 
 namespace CustomerRelationsManagement.Web.Controllers
 {
     public class ProjectTasksController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IMapper mapper;
+        private readonly IProjectTaskRepository projectTaskRepository;
+        private readonly IHttpContextAccessor httpContextAccessor;
+        private readonly UserManager<Employee> userManager;
 
-        public ProjectTasksController(ApplicationDbContext context)
+        public ProjectTasksController(IMapper mapper, IProjectTaskRepository projectTaskRepository, IHttpContextAccessor httpContextAccessor, UserManager<Employee> userManager)
         {
-            _context = context;
-        }
-
-        // GET: ProjectTasks
-        public async Task<IActionResult> Index()
-        {
-            var applicationDbContext = _context.ProjectTaskViewModel.Include(p => p.Project);
-            return View(await applicationDbContext.ToListAsync());
+            this.mapper = mapper;
+            this.projectTaskRepository = projectTaskRepository;
+            this.httpContextAccessor = httpContextAccessor;
+            this.userManager = userManager;
         }
 
         // GET: ProjectTasks/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.ProjectTaskViewModel == null)
+            if (id == null)
             {
-                return NotFound();
+                return NotFound("Task not found.");
             }
 
-            var projectTaskViewModel = await _context.ProjectTaskViewModel
-                .Include(p => p.Project)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (projectTaskViewModel == null)
+            try
             {
-                return NotFound();
-            }
+                var model = mapper.Map<ProjectTaskViewModel>(await projectTaskRepository.GetAsync(id));
 
-            return View(projectTaskViewModel);
+                if (model == null)
+                {
+                    return NotFound("Task not found.");
+                }
+
+                model.Employee = mapper.Map<EmployeeListViewModel>(await userManager.FindByIdAsync(model.EmployeeId));
+
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while viewing details for the task.");
+            }
         }
 
         // GET: ProjectTasks/Create
-        public IActionResult Create()
+        public IActionResult Create(int projectId)
         {
-            ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Id");
-            return View();
+            var projectTask = new ProjectTaskCreateViewModel
+            {
+                ProjectId = projectId
+            };
+            return View(projectTask);
         }
 
         // POST: ProjectTasks/Create
@@ -57,33 +73,47 @@ namespace CustomerRelationsManagement.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,EmployeeId,IsComplete,Name,Description,ProjectId,TaskPriority,DateDue")] ProjectTaskViewModel projectTaskViewModel)
+        public async Task<IActionResult> Create(ProjectTaskCreateViewModel model)
         {
-            if (ModelState.IsValid)
+            try
             {
-                _context.Add(projectTaskViewModel);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                if (ModelState.IsValid)
+                {
+                    var user = await userManager.GetUserAsync(httpContextAccessor?.HttpContext?.User);
+
+                    if (user == null)
+                    {
+                        return BadRequest("User not found.");
+                    }
+
+                    var projectTask = mapper.Map<ProjectTask>(model);
+                    projectTask.EmployeeId = user.Id;
+
+                    await projectTaskRepository.AddAsync(projectTask);
+
+                    TempData["SuccessMessage"] = "Task created successfully.";
+                    return RedirectToAction("ProjectDetails", "Home", new { projectId = projectTask.ProjectId });
+                }
             }
-            ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Id", projectTaskViewModel.ProjectId);
-            return View(projectTaskViewModel);
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while saving the changes.");
+            }
+
+            return View(model);
         }
 
         // GET: ProjectTasks/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.ProjectTaskViewModel == null)
+            var model = mapper.Map<ProjectTaskEditViewModel>(await projectTaskRepository.GetAsync(id));
+            
+            if (model == null)
             {
-                return NotFound();
+                return NotFound("Task not found.");
             }
 
-            var projectTaskViewModel = await _context.ProjectTaskViewModel.FindAsync(id);
-            if (projectTaskViewModel == null)
-            {
-                return NotFound();
-            }
-            ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Id", projectTaskViewModel.ProjectId);
-            return View(projectTaskViewModel);
+            return View(model);
         }
 
         // POST: ProjectTasks/Edit/5
@@ -91,78 +121,79 @@ namespace CustomerRelationsManagement.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,EmployeeId,IsComplete,Name,Description,ProjectId,TaskPriority,DateDue")] ProjectTaskViewModel projectTaskViewModel)
+        public async Task<IActionResult> Edit(int id, ProjectTaskEditViewModel model)
         {
-            if (id != projectTaskViewModel.Id)
+            if (id != model.Id)
             {
-                return NotFound();
+                return BadRequest("IDs do not match.");
             }
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Update(projectTaskViewModel);
-                    await _context.SaveChangesAsync();
+                    var projectTask = await projectTaskRepository.GetAsync(id);
+
+                    if (projectTask == null)
+                    {
+                        return NotFound("Task not found.");
+                    }
+
+                    projectTask.Name = model.Name;
+                    projectTask.Description = model.Description;
+                    projectTask.DateDue = (DateTime)model.DateDue;
+                    projectTask.TaskPriority = model.TaskPriority;
+                    projectTask.IsComplete = model.IsComplete;
+
+                    await projectTaskRepository.UpdateAsync(projectTask);
+
+                    TempData["SuccessMessage"] = "Task updated successfully.";
+                    return RedirectToAction("ProjectDetails", "Home", new { projectId = model.ProjectId });
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ProjectTaskViewModelExists(projectTaskViewModel.Id))
+                    if (!await projectTaskRepository.Exists(model.Id))
                     {
-                        return NotFound();
+                        return NotFound("Task not found.");
                     }
                     else
                     {
-                        throw;
+                        return Conflict("Concurrency conflict. The task has been modified by another user.");
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                catch (Exception ex)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while saving the changes.");
+                }
             }
-            ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Id", projectTaskViewModel.ProjectId);
-            return View(projectTaskViewModel);
-        }
-
-        // GET: ProjectTasks/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null || _context.ProjectTaskViewModel == null)
-            {
-                return NotFound();
-            }
-
-            var projectTaskViewModel = await _context.ProjectTaskViewModel
-                .Include(p => p.Project)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (projectTaskViewModel == null)
-            {
-                return NotFound();
-            }
-
-            return View(projectTaskViewModel);
+            return View(model);
         }
 
         // POST: ProjectTasks/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
+        
         {
-            if (_context.ProjectTaskViewModel == null)
+            try
             {
-                return Problem("Entity set 'ApplicationDbContext.ProjectTaskViewModel'  is null.");
+                var projectTask = await projectTaskRepository.GetAsync(id);
+                
+                if (projectTask == null)
+                {
+                    return NotFound("Task not found.");
+                }
+
+                await projectTaskRepository.DeleteAsync(id);
+
+                TempData["SuccessMessage"] = "Task deleted successfully.";
+                return RedirectToAction("ProjectDetails", "Home", new { projectId = projectTask?.ProjectId });
             }
-            var projectTaskViewModel = await _context.ProjectTaskViewModel.FindAsync(id);
-            if (projectTaskViewModel != null)
+            catch (Exception ex)
             {
-                _context.ProjectTaskViewModel.Remove(projectTaskViewModel);
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while deleting the task.");
             }
-            
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
         }
 
-        private bool ProjectTaskViewModelExists(int id)
-        {
-          return (_context.ProjectTaskViewModel?.Any(e => e.Id == id)).GetValueOrDefault();
-        }
     }
 }

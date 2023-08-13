@@ -1,13 +1,12 @@
-﻿using CustomerRelationsManagement.Web.Data;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using CustomerRelationsManagement.Web.Constants;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using CustomerRelationsManagement.Web.Constants;
 
 namespace CustomerRelationsManagement.Web.Models
 {
-    public class ProjectTaskCreateViewModel
+    public class ProjectTaskEditViewModel
     {
+        public int Id { get; set; }
+
         [Required]
         public string Name { get; set; }
 
@@ -20,6 +19,9 @@ namespace CustomerRelationsManagement.Web.Models
 
         [Display(Name = "Due Date")]
         public DateTime? DateDue { get; set; }
+
+        [Display(Name = "Status")]
+        public bool IsComplete { get; set; }
 
         [Required]
         [Display(Name = "Project")]

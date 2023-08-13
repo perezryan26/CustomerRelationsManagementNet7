@@ -3,6 +3,7 @@ using CustomerRelationsManagement.Web.Contracts;
 using CustomerRelationsManagement.Web.Data;
 using CustomerRelationsManagement.Web.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Abstractions;
@@ -29,6 +30,11 @@ namespace CustomerRelationsManagement.Web.Repositories
             var project = await context.Projects
                 .Include(p => p.Employees)
                 .FirstOrDefaultAsync(p => p.Id == projectId);
+
+            if(project == null)
+            {
+                return null;
+            }
 
            var model = mapper.Map<ProjectViewModel>(project);
            model.EmployeeIds = project.Employees.Select(e => e.Id).ToList();

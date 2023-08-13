@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using CustomerRelationsManagement.Web.Constants;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CustomerRelationsManagement.Web.Data
 {
@@ -18,10 +19,5 @@ namespace CustomerRelationsManagement.Web.Data
 
         public DateTime DateDue { get; set; }
 
-    }
-
-    public enum TaskPriority
-    {
-        Low, Medium, High
     }
 }

@@ -10,6 +10,7 @@ using AutoMapper;
 using CustomerRelationsManagement.Web.Contracts;
 using CustomerRelationsManagement.Web.Models;
 using CustomerRelationsManagement.Web.Repositories;
+using Microsoft.AspNetCore.Identity;
 
 namespace CustomerRelationsManagement.Web.Controllers
 {
@@ -29,26 +30,41 @@ namespace CustomerRelationsManagement.Web.Controllers
         // GET: Announcements
         public async Task<IActionResult> Index()
         {
-            var model = mapper.Map<List<AnnouncementViewModel>>(await announcementRepository.GetAllAsync());
-            return View(model);
+            try
+            {
+                var model = mapper.Map<List<AnnouncementViewModel>>(await announcementRepository.GetAllAsync());
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while retrieving announcements.");
+            }
         }
 
         // GET: Announcements/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Announcements == null)
+            if (id == null)
             {
-                return NotFound();
+                return NotFound("Announcement not found.");
             }
 
-            var model = mapper.Map<AnnouncementViewModel>(await announcementRepository.GetAsync(id));
-
-            if (model == null)
+            try
             {
-                return NotFound();
-            }
+                var model = mapper.Map<AnnouncementViewModel>(await announcementRepository.GetAsync(id));
 
-            return View(model);
+                if (model == null)
+                {
+                    return NotFound("Announcement not found.");
+                }
+
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while viewing details for the announcement.");
+            }
         }
 
         // GET: Announcements/Create
@@ -64,12 +80,21 @@ namespace CustomerRelationsManagement.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(AnnouncementViewModel model)
         {
-            if (ModelState.IsValid)
+            try
             {
-                var announcement = mapper.Map<Announcement>(model);
-                announcement.DatePublished = DateTime.Now;
-                await announcementRepository.AddAsync(announcement);
-                return RedirectToAction(nameof(Index));
+                if (ModelState.IsValid)
+                {
+                    var announcement = mapper.Map<Announcement>(model);
+                    announcement.DatePublished = DateTime.Now;
+                    await announcementRepository.AddAsync(announcement);
+
+                    TempData["SuccessMessage"] = "Announcement created successfully.";
+                    return RedirectToAction(nameof(Index));
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while saving the changes.");
             }
             return View(model);
         }
@@ -77,15 +102,11 @@ namespace CustomerRelationsManagement.Web.Controllers
         // GET: Announcements/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.Announcements == null)
-            {
-                return NotFound();
-            }
-
             var model = mapper.Map<AnnouncementViewModel>(await announcementRepository.GetAsync(id));
+            
             if (model == null)
             {
-                return NotFound();
+                return NotFound("Announcement not found.");
             }
             return View(model);
         }
@@ -97,17 +118,35 @@ namespace CustomerRelationsManagement.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, AnnouncementViewModel model)
         {
-            try
+            if (id != model.Id)
             {
-                if (ModelState.IsValid)
+                return BadRequest("IDs do not match.");
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
                 {
                     await announcementRepository.UpdateAsync(mapper.Map<Announcement>(model));
+
+                    TempData["SuccessMessage"] = "Announcement updated successfully.";
                     return RedirectToAction(nameof(Index));
                 }
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError(string.Empty, "An error has occured please try again");
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!await announcementRepository.Exists(model.Id))
+                    {
+                        return NotFound("Announcement not found.");
+                    }
+                    else
+                    {
+                        return Conflict("Concurrency conflict. The announcement has been modified by another user.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while saving the changes.");
+                }
             }
             return View(model);
         }
@@ -117,23 +156,24 @@ namespace CustomerRelationsManagement.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Announcements == null)
+            try
             {
-                return Problem("Entity set 'ApplicationDbContext.Announcements'  is null.");
-            }
-            var announcement = await _context.Announcements.FindAsync(id);
-            if (announcement != null)
-            {
-                _context.Announcements.Remove(announcement);
-            }
-            
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
+                var announcement = await announcementRepository.GetAsync(id);
 
-        private bool AnnouncementExists(int id)
-        {
-          return (_context.Announcements?.Any(e => e.Id == id)).GetValueOrDefault();
+                if (announcement == null)
+                {
+                    return NotFound("Task not found.");
+                }
+
+                await announcementRepository.DeleteAsync(id);
+
+                TempData["SuccessMessage"] = "Announcement deleted successfully.";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while deleting the announcement.");
+            }
         }
     }
 }

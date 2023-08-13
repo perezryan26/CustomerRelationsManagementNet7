@@ -1,20 +1,109 @@
-﻿@model CustomerRelationsManagement.Web.Models.ProjectViewModel
+﻿@model CustomerRelationsManagement.Web.Models.ProjectProjectTasksViewModel
 
 @{
     ViewData["Title"] = "Project Details";
 }
 
-<h1>@Model.Name</h1>
-<h2>Description: @Model.Description</h2>
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+@* Display success message if present *@
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+<a class="btn btn-warning text-white" asp-controller="Home" asp-action="Index" >Back To Dashboard</a>
+<h1>@Model.Project.Name</h1>
+<h2>Description: @Model.Project.Description</h2>
 <h2>Teammates</h2>
 <ul>
-    @foreach (var employee in Model.Employees)
+    @foreach (var employee in Model.Project.Employees)
     {
         <li>@employee.FirstName @employee.LastName</li>
     }
 </ul>
 
+<a class="btn btn-warning text-white" asp-controller="Home" asp-action="CreateTask" asp-route-projectId="@Model.Project.Id">Add Task</a>
+
 <div>
     <hr />
     <h1>Tasks</h1>
+    <div class="container">
+        <div class="row">
+            @foreach (var projectTask in Model.ProjectTasks)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <div class="card-header">
+                            @projectTask.Name
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">@projectTask.Description</p>
+                            <p class="card-text">
+                                Priority: <span class="@GetPriorityBadgeClass(projectTask.TaskPriority)">@projectTask.TaskPriority</span>
+                            </p>
+                            <a class="btn btn-warning text-white" asp-controller="ProjectTasks" asp-action="Details" asp-route-id="@projectTask.Id">Details</a>
+                            <a class="btn btn-warning text-white" asp-controller="ProjectTasks" asp-action="Edit" asp-route-id="@projectTask.Id">Edit</a>
+                            <button data-id="@projectTask.Id" class="btn btn-danger deleteBtn" type="button"><i class="far fa-trash-alt"></i></button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
 </div>
+
+<form id="deleteFrom" asp-controller="ProjectTasks" asp-action="Delete">
+    <input type="hidden" id="projectTaskId" name="Id" />
+</form>
+
+@section Scripts {
+    <script>
+        $(function () {
+            $('.deleteBtn').click(function (e) {
+                swal({
+                    title: "Are you sure?",
+                    text: "Are you sure you want to delete this record?",
+                    icon: "warning",
+                    buttons: true,
+                    dangerMode: true
+
+                }).then((confirm) => {
+                    if (confirm) {
+                        var btn = $(this);
+                        var id = btn.data("id");
+                        $('#projectTaskId').val(id);
+                        $('#deleteFrom').submit();
+
+                    }
+                });
+            }); //watching for a class called deleteBtn
+
+
+        });
+    </script>
+}
+
+@functions {
+    string GetPriorityBadgeClass(TaskPriority priority)
+    {
+        switch (priority)
+        {
+            case TaskPriority.Low:
+                return "badge bg-success";
+            case TaskPriority.Medium:
+                return "badge bg-warning";
+            case TaskPriority.High:
+                return "badge bg-danger";
+            default:
+                return "badge";
+        }
+    }
+}

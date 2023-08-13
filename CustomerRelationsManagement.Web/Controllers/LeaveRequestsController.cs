@@ -133,7 +133,7 @@ namespace CustomerRelationsManagement.Web.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!LeaveRequestExists(leaveRequest.Id))
+                    if (!await leaveRequestRepository.Exists(leaveRequest.Id))
                     {
                         return NotFound();
                     }
@@ -145,25 +145,6 @@ namespace CustomerRelationsManagement.Web.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["LeaveTypeId"] = new SelectList(_context.LeaveTypes, "Id", "Id", leaveRequest.LeaveTypeId);
-            return View(leaveRequest);
-        }
-
-        // GET: LeaveRequests/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null || _context.LeaveRequests == null)
-            {
-                return NotFound();
-            }
-
-            var leaveRequest = await _context.LeaveRequests
-                .Include(l => l.LeaveType)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (leaveRequest == null)
-            {
-                return NotFound();
-            }
-
             return View(leaveRequest);
         }
 
@@ -184,11 +165,6 @@ namespace CustomerRelationsManagement.Web.Controllers
             
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool LeaveRequestExists(int id)
-        {
-          return (_context.LeaveRequests?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using CustomerRelationsManagement.Web.Data;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CustomerRelationsManagement.Web.Models
@@ -12,6 +13,11 @@ namespace CustomerRelationsManagement.Web.Models
 
         public string EmployeeId { get; set; }
 
+        [ForeignKey("EmployeeId")]
+        [Display(Name = "Team Member")]
+        public EmployeeListViewModel? Employee { get; set; }
+
+        [Display(Name="Status")]
         public bool IsComplete { get; set; }
     }
 }

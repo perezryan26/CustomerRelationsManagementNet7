@@ -28,11 +28,15 @@ namespace CustomerRelationsManagement.Web.Configurations
             CreateMap<Position, PositionViewModel>().ReverseMap();
 
             CreateMap<Announcement, AnnouncementViewModel>().ReverseMap();
-            
+
             CreateMap<Project, ProjectViewModel>().ReverseMap();
-            CreateMap<Project,ProjectCreateViewModel>().ReverseMap();
+            CreateMap<Project, ProjectCreateViewModel>().ReverseMap();
 
             CreateMap<Employee, EmployeeViewModel>().ReverseMap();
+
+            CreateMap<ProjectTask, ProjectTaskViewModel>().ReverseMap();
+            CreateMap<ProjectTask, ProjectTaskCreateViewModel>().ReverseMap();
+            CreateMap<ProjectTask, ProjectTaskEditViewModel>().ReverseMap();
         }
     }
 }
