@@ -31,24 +31,18 @@
                 </button>
                 <div class="navbar-collapse container collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-white" asp-area="" asp-controller="Home" asp-action="Index">Dashboard</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" asp-area="" asp-controller="Client" asp-action="Index">Clients</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" asp-area="" asp-controller="Deal" asp-action="Index">Deals</a>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                HR Resources
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <li><a class="dropdown-item" asp-area="" asp-controller="LeaveRequests" asp-action="MyLeave">My Leaves</a></li>
-                                <li><a class="dropdown-item" asp-area="" asp-controller="LeaveRequests" asp-action="Create">Request Leave</a></li>
-                            </ul>
-                        </li>
+                        @if (User.IsInRole(Roles.User))
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    HR Resources
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <li><a class="dropdown-item" asp-area="" asp-controller="LeaveRequests" asp-action="MyLeave">My Leaves</a></li>
+                                    <li><a class="dropdown-item" asp-area="" asp-controller="LeaveRequests" asp-action="Create">Request Leave</a></li>
+                                </ul>
+                            </li>
+                        }
                         @if (User.IsInRole(Roles.Administrator))
                         {
                             <li class="nav-item dropdown">

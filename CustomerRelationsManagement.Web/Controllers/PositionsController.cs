@@ -10,45 +10,65 @@ using CustomerRelationsManagement.Web.Contracts;
 using AutoMapper;
 using CustomerRelationsManagement.Web.Models;
 using CustomerRelationsManagement.Web.Repositories;
+using Microsoft.AspNetCore.Authorization;
+using CustomerRelationsManagement.Web.Constants;
 
 namespace CustomerRelationsManagement.Web.Controllers
 {
+    [Authorize(Roles = Roles.Administrator)]
     public class PositionsController : Controller
     {
-        private readonly ApplicationDbContext _context;
         private readonly IPositionRepository positionRepository;
         private readonly IMapper mapper;
+        private readonly ILogger<PositionsController> logger;
 
-        public PositionsController(ApplicationDbContext context, IPositionRepository positionRepository, IMapper mapper)
+        public PositionsController(IPositionRepository positionRepository, IMapper mapper, ILogger<PositionsController> logger)
         {
-            _context = context;
             this.positionRepository = positionRepository;
             this.mapper = mapper;
+            this.logger = logger;
         }
 
         // GET: Positions
         public async Task<IActionResult> Index()
         {
-            var model = mapper.Map<List<PositionViewModel>>(await positionRepository.GetAllAsync());
-            return View(model);
-            
+            try
+            {
+                var model = mapper.Map<List<PositionViewModel>>(await positionRepository.GetAllAsync());
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred while retrieving positions.");
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while retrieving positions.");
+            }
+
         }
 
         // GET: Positions/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Positions == null)
+            if (id == null)
             {
-                return NotFound();
+                return NotFound("Position not found.");
             }
 
-            var model = mapper.Map<PositionViewModel>(await positionRepository.GetAsync(id));
-            if (model == null)
+            try
             {
-                return NotFound();
-            }
+                var model = mapper.Map<PositionViewModel>(await positionRepository.GetAsync(id));
 
-            return View(model);
+                if (model == null)
+                {
+                    return NotFound("Position not found.");
+                }
+
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred while viewing details for the position.");
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while viewing details for the position.");
+            }
         }
 
         // GET: Positions/Create
@@ -64,10 +84,20 @@ namespace CustomerRelationsManagement.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(PositionViewModel model)
         {
-            if (ModelState.IsValid)
+            try
             {
-                await positionRepository.AddAsync(mapper.Map<Position>(model));
-                return RedirectToAction(nameof(Index));
+                if (ModelState.IsValid)
+                {
+                    await positionRepository.AddAsync(mapper.Map<Position>(model));
+
+                    TempData["SuccessMessage"] = "Position created successfully.";
+                    return RedirectToAction(nameof(Index));
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred while creating the position.");
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while creating the position.");
             }
             return View(model);
         }
@@ -75,15 +105,11 @@ namespace CustomerRelationsManagement.Web.Controllers
         // GET: Positions/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.Positions == null)
-            {
-                return NotFound();
-            }
-
             var model = mapper.Map<PositionViewModel>(await positionRepository.GetAsync(id));
+            
             if (model == null)
             {
-                return NotFound();
+                return NotFound("Position not found.");
             }
             return View(model);
         }
@@ -93,19 +119,38 @@ namespace CustomerRelationsManagement.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(PositionViewModel model)
+        public async Task<IActionResult> Edit(int id, PositionViewModel model)
         {
-            try
+            if (id != model.Id)
             {
-                if (ModelState.IsValid)
+                return BadRequest("IDs do not match.");
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
                 {
                     await positionRepository.UpdateAsync(mapper.Map<Position>(model));
+
+                    TempData["SuccessMessage"] = "Position updated successfully.";
                     return RedirectToAction(nameof(Index));
                 }
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError(string.Empty, "An error has occured please try again");
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!await positionRepository.Exists(model.Id))
+                    {
+                        return NotFound("Position not found.");
+                    }
+                    else
+                    {
+                        return Conflict("Concurrency conflict. The position has been modified by another user.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "An error occurred while saving the position changes.");
+                    return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while saving the position changes.");
+                }
             }
             return View(model);
         }
@@ -115,18 +160,25 @@ namespace CustomerRelationsManagement.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Positions == null)
+            try
             {
-                return Problem("Entity set 'ApplicationDbContext.Positions'  is null.");
+                var position = await positionRepository.GetAsync(id);
+
+                if (position == null)
+                {
+                    return NotFound("Task not found.");
+                }
+
+                await positionRepository.DeleteAsync(id);
+
+                TempData["SuccessMessage"] = "Position deleted successfully.";
+                return RedirectToAction(nameof(Index));
             }
-            var position = await _context.Positions.FindAsync(id);
-            if (position != null)
+            catch (Exception ex)
             {
-                _context.Positions.Remove(position);
+                logger.LogError(ex, "An error occurred while deleting the position.");
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while deleting the position.");
             }
-            
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
         }
     }
 }

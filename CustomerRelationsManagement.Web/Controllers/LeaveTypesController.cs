@@ -1,89 +1,110 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CustomerRelationsManagement.Web.Data;
 using CustomerRelationsManagement.Web.Contracts;
 using AutoMapper;
 using CustomerRelationsManagement.Web.Models;
-using CustomerRelationsManagement.Web.Repositories;
+using Microsoft.AspNetCore.Authorization;
+using CustomerRelationsManagement.Web.Constants;
 
 namespace CustomerRelationsManagement.Web.Controllers
 {
+    [Authorize(Roles = Roles.Administrator)]
     public class LeaveTypesController : Controller
     {
         private readonly ILeaveTypeRepository leaveTypeRepository;
         private readonly IMapper mapper;
         private readonly ILeaveAllocationRepository leaveAllocationRepository;
+        private readonly ILogger<LeaveTypesController> logger;
 
         public LeaveTypesController(ILeaveTypeRepository leaveTypeRepository,
-            IMapper mapper, ILeaveAllocationRepository leaveAllocationRepository)
+            IMapper mapper, ILeaveAllocationRepository leaveAllocationRepository, ILogger<LeaveTypesController> logger)
         {
             this.leaveTypeRepository = leaveTypeRepository;
             this.mapper = mapper;
             this.leaveAllocationRepository = leaveAllocationRepository;
+            this.logger = logger;
         }
 
-        // GET: Client
+        // GET: LeaveTypes
         public async Task<IActionResult> Index()
         {
             return View(mapper.Map<List<LeaveTypeViewModel>>(await leaveTypeRepository.GetAllAsync()));
         }
 
-        // GET: Client/Details/5
+        // GET: LeaveTypes/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-
-            var leaveType = await leaveTypeRepository.GetAsync(id);
-
-            if (leaveType == null)
+            if (id == null)
             {
-                return NotFound();
+                return NotFound("Task not found.");
             }
 
-            var leaveTypeViewModel = mapper.Map<LeaveTypeViewModel>(leaveType);
-            return View(leaveTypeViewModel);
+            try
+            {
+                var model = mapper.Map<LeaveTypeViewModel>(await leaveTypeRepository.GetAsync(id));
+
+                if (model == null)
+                {
+                    return NotFound("Leave type not found.");
+                }
+
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred while viewing details for the leave type.");
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while viewing details for the leave type.");
+            }
         }
 
-        // GET: Client/Create
+        // GET: LeaveTypes/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Client/Create
+        // POST: LeaveTypes/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(LeaveTypeViewModel leaveTypeViewModel)
         {
-            if (ModelState.IsValid)
+            try
             {
-                var leaveType = mapper.Map<LeaveType>(leaveTypeViewModel);
-                await leaveTypeRepository.AddAsync(leaveType);
-                return RedirectToAction(nameof(Index));
+                if (ModelState.IsValid)
+                {
+                    var leaveType = mapper.Map<LeaveType>(leaveTypeViewModel);
+                    await leaveTypeRepository.AddAsync(leaveType);
+
+                    TempData["SuccessMessage"] = "Leave type created successfully.";
+                    return RedirectToAction(nameof(Index));
+                }
             }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred while creating the leave type.");
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while creating the leave type.");
+            }
+
             return View(leaveTypeViewModel);
         }
 
-        // GET: Client/Edit/5
+        // GET: LeaveTypes/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            var leaveType = await leaveTypeRepository.GetAsync(id);
-            if (leaveType == null)
+            var model = mapper.Map<LeaveTypeViewModel>(await leaveTypeRepository.GetAsync(id));
+
+            if (model == null)
             {
-                return NotFound();
+                return NotFound("Leave type not found.");
             }
 
-            var leaveTypeViewModel = mapper.Map<LeaveTypeViewModel>(leaveType);
-            return View(leaveTypeViewModel);
+            return View(model);
         }
 
-        // POST: Client/Edit/5
+        // POST: LeaveTypes/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
@@ -92,47 +113,100 @@ namespace CustomerRelationsManagement.Web.Controllers
         {
             if (id != leaveTypeViewModel.Id)
             {
-                return NotFound();
+                return BadRequest("IDs do not match.");
             }
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    var leaveType = mapper.Map<LeaveType>(leaveTypeViewModel);
+                    var leaveType = await leaveTypeRepository.GetAsync(id);
+
+                    if(leaveType == null)
+                    {
+                        return NotFound("Leave Type not found.");
+                    }
+                    
+                    mapper.Map(leaveTypeViewModel, leaveType);
                     await leaveTypeRepository.UpdateAsync(leaveType);
+
+                    TempData["SuccessMessage"] = "Leave Type updated successfully.";
+                    return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException)
                 {
                     if (!await leaveTypeRepository.Exists(leaveTypeViewModel.Id))
                     {
-                        return NotFound();
+                        return NotFound("Leave Type not found.");
                     }
                     else
                     {
-                        throw;
+                        return Conflict("Concurrency conflict. The leave type has been modified by another user.");
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                catch (Exception ex) 
+                {
+                    logger.LogError(ex, "An error occurred while saving the leave type changes.");
+                    return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while saving the leave type changes.");
+                } 
             }
             return View(leaveTypeViewModel);
         }
 
-        // POST: Client/Delete/5
+        // POST: LeaveTypes/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            await leaveTypeRepository.DeleteAsync(id);
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                var leaveType = await leaveTypeRepository.GetAsync(id);
+
+                if (leaveType == null)
+                {
+                    return NotFound("Leave Type not found.");
+                }
+
+                await leaveTypeRepository.DeleteAsync(id);
+
+                TempData["SuccessMessage"] = "Leave Type deleted successfully.";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred while deleting the leave type.");
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while deleting the leave type.");
+            }
+
+
+            
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AllocateLeave(int id)
         {
-            await leaveAllocationRepository.LeaveAllocation(id);
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                var leaveType = await leaveTypeRepository.GetAsync(id);
+
+                if (leaveType == null)
+                {
+                    return NotFound("Leave Type not found.");
+                }
+
+                await leaveAllocationRepository.LeaveAllocation(id);
+
+                TempData["SuccessMessage"] = "Leave Type successfully allocated to all employees";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred while allocating the leave type.");
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while allocating the leave type.");
+            }
+
+            
         }
     }
 }

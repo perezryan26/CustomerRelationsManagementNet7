@@ -16,5 +16,10 @@ namespace CustomerRelationsManagement.Web.Repositories
             this.context = context;
             this.mapper = mapper;
         }
+
+        public async Task<List<ProjectTask>> GetRangeAsync(int projectId)
+        {
+            return await context.ProjectTasks.Where(q => q.ProjectId == projectId).ToListAsync();
+        }
     }
 }

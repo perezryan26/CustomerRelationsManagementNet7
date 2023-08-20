@@ -55,9 +55,7 @@ namespace CustomerRelationsManagement.Web.Repositories
 
         public async Task UpdateAsync(T entity)
         {
-            //does same thing as line below it
-            //context.Entry(entity).State = EntityState.Modified; 
-            context.Update(entity);
+            context.Entry(entity).State = EntityState.Modified; 
             await context.SaveChangesAsync();
         }
     }

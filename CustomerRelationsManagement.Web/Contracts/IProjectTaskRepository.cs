@@ -4,6 +4,6 @@ namespace CustomerRelationsManagement.Web.Contracts
 {
     public interface IProjectTaskRepository : IGenericRepository<ProjectTask>
     {
-        //Task<ProjectTask> GetAsync(int? taskId);
+        Task<List<ProjectTask>> GetRangeAsync(int projectId);
     }
 }

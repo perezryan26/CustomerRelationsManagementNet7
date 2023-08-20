@@ -12,6 +12,7 @@ using System.Diagnostics;
 
 namespace CustomerRelationsManagement.Web.Controllers
 {
+    [Authorize]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -21,8 +22,15 @@ namespace CustomerRelationsManagement.Web.Controllers
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IProjectRepository projectRepository;
         private readonly IProjectTaskRepository projectTaskRepository;
+        private readonly IAnnouncementRepository announcementRepository;
 
-        public HomeController(ILogger<HomeController> logger, ApplicationDbContext context, IMapper mapper, UserManager<Employee> userManager, IHttpContextAccessor httpContextAccessor, IProjectRepository projectRepository, IProjectTaskRepository projectTaskRepository)
+        public HomeController(ILogger<HomeController> logger,
+            ApplicationDbContext context, IMapper mapper,
+            UserManager<Employee> userManager,
+            IHttpContextAccessor httpContextAccessor,
+            IProjectRepository projectRepository,
+            IProjectTaskRepository projectTaskRepository,
+            IAnnouncementRepository announcementRepository)
         {
             _logger = logger;
             this.context = context;
@@ -31,12 +39,12 @@ namespace CustomerRelationsManagement.Web.Controllers
             this.httpContextAccessor = httpContextAccessor;
             this.projectRepository = projectRepository;
             this.projectTaskRepository = projectTaskRepository;
+            this.announcementRepository = announcementRepository;
         }
 
-        [Authorize]
         public async Task<IActionResult> Index()
         {
-            var announcements = mapper.Map<List<AnnouncementViewModel>>(context.Announcements.OrderByDescending(a => a.DatePublished).Take(3).ToList());
+            var announcements = mapper.Map<List<AnnouncementViewModel>>(await announcementRepository.GetRecentAnnouncements());
             
             var user = await userManager.GetUserAsync(httpContextAccessor?.HttpContext?.User);
             var projects = await projectRepository.GetRangeAsync(user.Id);
@@ -51,38 +59,37 @@ namespace CustomerRelationsManagement.Web.Controllers
 
         public ActionResult CreateTask(int projectId)
         {
-            // Your logic here
-
-            // Redirect to the OtherAction action in OtherController
             return RedirectToAction("Create", "ProjectTasks", new { projectId = projectId});
         }
 
         public async Task<IActionResult> ProjectDetails(int projectId)
         {
-
-            var user = await userManager.GetUserAsync(httpContextAccessor?.HttpContext?.User);
-            
-
-            var project = await projectRepository.GetAsync(projectId);
-
-            if (project == null)
+            try
             {
-                return NotFound();
+                var project = await projectRepository.GetAsync(projectId);
+
+                if (project == null)
+                {
+                    return NotFound("Project task not found.");
+                }
+
+                var projectTasks = mapper.Map<List<ProjectTaskViewModel>>(await projectTaskRepository.GetRangeAsync(project.Id));
+
+                var model = new ProjectProjectTasksViewModel
+                {
+                    Project = mapper.Map<ProjectViewModel>(project),
+                    ProjectTasks = projectTasks
+                };
+
+                return View(model);
             }
-
-            var projectTasks = mapper.Map<List<ProjectTaskViewModel>>(await context.ProjectTasks.Where(q => q.ProjectId == project.Id).ToListAsync());
-
-            var model = new ProjectProjectTasksViewModel
+            catch (Exception ex)
             {
-                Project = mapper.Map<ProjectViewModel>(project),
-                ProjectTasks = projectTasks
-            };
-
-            
-            return View(model);
+                _logger.LogError(ex, "An error occurred while viewing details for the project.");
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while viewing details for the project.");
+            }
         }
 
-        [Authorize]
         public IActionResult Privacy()
         {
             return View();

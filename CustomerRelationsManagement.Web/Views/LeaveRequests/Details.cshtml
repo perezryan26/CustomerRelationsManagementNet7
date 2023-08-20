@@ -39,6 +39,12 @@
 <div>
     <hr />
     <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.LeaveType)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.LeaveType.Name)
+        </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.StartDate)
         </dt>
@@ -52,18 +58,6 @@
             @Html.DisplayFor(model => model.EndDate)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.LeaveType)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.LeaveType.Id)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DateRequested)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DateRequested)
-        </dd>
-        <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.RequestComments)
         </dt>
         <dd class = "col-sm-10">
@@ -72,6 +66,19 @@
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    @if(Model.Approved == null)
+    {
+        <form asp-action="ApproveRequest">
+            <input name="Id" type="hidden" value="@Model.Id" />
+            <input name="approved" type="hidden" value="true"/>
+            <button type="submit" class="btn btn-success">Approve</button>
+        </form>
+
+        <form asp-action="ApproveRequest">
+            <input name="Id" type="hidden" value="@Model.Id" />
+            <input name="approved" type="hidden" value="false" />
+            <button type="submit" class="btn btn-danger">Reject</button>
+        </form>
+    }
+    <a class="btn btn-dark" asp-action="Index">Back to List</a>
 </div>

@@ -8,8 +8,8 @@ namespace CustomerRelationsManagement.Web.Contracts
         Task LeaveAllocation(int leaveTypeId);
         Task<bool> AllocationExists(string employeeId, int leaveTypeId, int period);
         Task<EmployeeAllocationViewModel> GetEmployeeAllocations(string employeeId);
-        Task<LeaveAllocation?> GetEmployeeAllocation(string employeeId, int LeaveTypeId);
+        Task<LeaveAllocation?> GetEmployeeAllocation(string employeeId, int leaveTypeId);
         Task<LeaveAllocationEditViewModel> GetEmployeeAllocation(int id);
-        Task <bool>UpdateEmployeeAllocation(LeaveAllocationEditViewModel model);
+        Task<bool> UpdateEmployeeAllocation(LeaveAllocationEditViewModel model);
     }
 }

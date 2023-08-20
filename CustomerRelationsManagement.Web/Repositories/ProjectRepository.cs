@@ -84,5 +84,20 @@ namespace CustomerRelationsManagement.Web.Repositories
             context.Update(project);
             await context.SaveChangesAsync();
         }
+
+        public async Task<List<EmployeeViewModel>> GetEmployeesAsync()
+        {
+            var Employees = context.Users
+                .Select(e => new Employee
+                {
+                    Id = e.Id,
+                    FirstName = e.FirstName,
+                    LastName = e.LastName
+                }).ToList();
+
+            var model = mapper.Map<List<EmployeeViewModel>>(Employees);
+
+            return model;
+        }
     }
 }

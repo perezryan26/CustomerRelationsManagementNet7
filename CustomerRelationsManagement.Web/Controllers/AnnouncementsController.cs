@@ -11,20 +11,25 @@ using CustomerRelationsManagement.Web.Contracts;
 using CustomerRelationsManagement.Web.Models;
 using CustomerRelationsManagement.Web.Repositories;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
+using CustomerRelationsManagement.Web.Constants;
 
 namespace CustomerRelationsManagement.Web.Controllers
 {
+    [Authorize(Roles = Roles.Administrator)]
     public class AnnouncementsController : Controller
     {
         private readonly ApplicationDbContext _context;
         private readonly IMapper mapper;
         private readonly IAnnouncementRepository announcementRepository;
+        private readonly ILogger<AnnouncementsController> logger;
 
-        public AnnouncementsController(ApplicationDbContext context, IMapper mapper, IAnnouncementRepository announcementRepository)
+        public AnnouncementsController(ApplicationDbContext context, IMapper mapper, IAnnouncementRepository announcementRepository, ILogger<AnnouncementsController> logger)
         {
             _context = context;
             this.mapper = mapper;
             this.announcementRepository = announcementRepository;
+            this.logger = logger;
         }
 
         // GET: Announcements
@@ -37,7 +42,7 @@ namespace CustomerRelationsManagement.Web.Controllers
             }
             catch (Exception ex)
             {
-                // Log the exception
+                logger.LogError(ex, "An error occurred while retrieving announcements.");
                 return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while retrieving announcements.");
             }
         }
@@ -63,6 +68,7 @@ namespace CustomerRelationsManagement.Web.Controllers
             }
             catch (Exception ex)
             {
+                logger.LogError(ex, "An error occurred while viewing details for the announcement.");
                 return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while viewing details for the announcement.");
             }
         }
@@ -94,7 +100,8 @@ namespace CustomerRelationsManagement.Web.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while saving the changes.");
+                logger.LogError(ex, "An error occurred while saving the announcement.");
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while saving the announcement.");
             }
             return View(model);
         }
@@ -127,7 +134,10 @@ namespace CustomerRelationsManagement.Web.Controllers
             {
                 try
                 {
-                    await announcementRepository.UpdateAsync(mapper.Map<Announcement>(model));
+                    var announcement = mapper.Map<Announcement>(model);
+                    announcement.DatePublished = DateTime.Now;
+
+                    await announcementRepository.UpdateAsync(announcement);
 
                     TempData["SuccessMessage"] = "Announcement updated successfully.";
                     return RedirectToAction(nameof(Index));
@@ -145,7 +155,8 @@ namespace CustomerRelationsManagement.Web.Controllers
                 }
                 catch (Exception ex)
                 {
-                    return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while saving the changes.");
+                    logger.LogError(ex, "An error occurred while saving the announcement changes.");
+                    return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while saving the announcement changes.");
                 }
             }
             return View(model);
@@ -172,6 +183,7 @@ namespace CustomerRelationsManagement.Web.Controllers
             }
             catch (Exception ex)
             {
+                logger.LogError(ex, "An error occurred while deleting the announcement.");
                 return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while deleting the announcement.");
             }
         }

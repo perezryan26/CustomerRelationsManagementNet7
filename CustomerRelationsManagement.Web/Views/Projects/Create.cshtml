@@ -28,7 +28,7 @@
                 @foreach (var employee in Model.Employees)
                 {
                     <div>
-                        <input type="checkbox" name="EmployeeIds" value="@employee.Id" id="employee_@employee.Id" />
+                        <input type="checkbox" name="EmployeeIds" value="@employee.Id" id="employee_@employee.Id" checked="@(Model.EmployeeIds?.Contains(employee.Id) ?? false)" />
                         <label for="employee_@employee.Id">@employee.FirstName @employee.LastName</label>
                     </div>
                 }

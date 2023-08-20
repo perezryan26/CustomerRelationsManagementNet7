@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using CustomerRelationsManagement.Web.Constants;
+using CustomerRelationsManagement.Web.Contracts;
 using CustomerRelationsManagement.Web.Data;
 using CustomerRelationsManagement.Web.Models;
-using AutoMapper;
-using CustomerRelationsManagement.Web.Contracts;
 using Microsoft.AspNetCore.Authorization;
-using CustomerRelationsManagement.Web.Constants;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace CustomerRelationsManagement.Web.Controllers
 {
@@ -19,56 +14,101 @@ namespace CustomerRelationsManagement.Web.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly ILeaveRequestRepository leaveRequestRepository;
+        private readonly ILeaveTypeRepository leaveTypeRepository;
+        private readonly ILogger<LeaveRequestsController> logger;
 
-        public LeaveRequestsController(ApplicationDbContext context, ILeaveRequestRepository leaveRequestRepository)
+        public LeaveRequestsController(ApplicationDbContext context, ILeaveRequestRepository leaveRequestRepository, ILeaveTypeRepository leaveTypeRepository, ILogger<LeaveRequestsController> logger
+            )
         {
             _context = context;
             this.leaveRequestRepository = leaveRequestRepository;
+            this.leaveTypeRepository = leaveTypeRepository;
+            this.logger = logger;
         }
 
         // GET: LeaveRequests
         [Authorize(Roles = Roles.Administrator)]
         public async Task<IActionResult> Index()
         {
-            var model = await leaveRequestRepository.GetAdminLeaveRequestList();
-            return View(model);
+            try
+            {
+                var model = await leaveRequestRepository.GetAdminLeaveRequestList();
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred while retrieving the leave requests.");
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while retrieving the leave requests.");
+            }
         }
 
         public async Task<ActionResult> MyLeave()
         {
-            var model = await leaveRequestRepository.GetMyLeaveDetails();
-            return View(model);
+            try
+            {
+                var model = await leaveRequestRepository.GetMyLeaveDetails();
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred while retrieving the leave requests.");
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while retrieving the leave requests.");
+            }
+            
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ApproveRequest(int id, bool approved)
+        {
+            try
+            {
+                await leaveRequestRepository.ChangeApprovalStatus(id, approved);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred while approving the leave request.");
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while approving the the leave request.");
+            }
+
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: LeaveRequests/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.LeaveRequests == null)
+            if (id == null)
             {
-                return NotFound();
+                return NotFound("Leave request not found.");
             }
 
-            var leaveRequest = await _context.LeaveRequests
-                .Include(l => l.LeaveType)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (leaveRequest == null)
+            try
             {
-                return NotFound();
-            }
+                var model = await leaveRequestRepository.GetLeaveRequestAsync(id);
 
-            return View(leaveRequest);
+                if (model == null)
+                {
+                    return NotFound("Leave request not found.");
+                }
+
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred while viewing details for the leave request.");
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while viewing details for the leave request.");
+            }
         }
 
         // GET: LeaveRequests/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            var leaveTypes = await leaveTypeRepository.GetAllAsync();
             var model = new LeaveRequestCreateViewModel
             {
-                LeaveTypes = new SelectList(_context.LeaveTypes, "Id", "Name"),
+                LeaveTypes = new SelectList(leaveTypes, "Id", "Name"),
             };
 
-            //SelectList(where the data is stored can be a query or a list but a query is more efficient, what you want to keep from the data, what you want to be displayed)
-            //ViewData["LeaveTypeId"] = new SelectList(_context.LeaveTypes, "Id", "Name");
             return View(model);
         }
 
@@ -83,19 +123,27 @@ namespace CustomerRelationsManagement.Web.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    await leaveRequestRepository.CreateLeaveRequest(model);
-                    return RedirectToAction(nameof(Index));
+                    if (await leaveRequestRepository.CreateLeaveRequest(model))
+                    {
+                        return RedirectToAction(nameof(MyLeave));
+                    }
+                    ModelState.AddModelError(string.Empty, "You have exceeded your allocation with this request.");
                 }
             }
             catch (Exception ex)
             {
+                logger.LogError(ex, "An error occurred while creating the leave request.");
                 ModelState.AddModelError(string.Empty, "An error has occured please try again");
             }
-            model.LeaveTypes = new SelectList(_context.LeaveTypes, "Id", "Name", model.LeaveTypeId);
+
+            var leaveTypes = await leaveTypeRepository.GetAllAsync();
+            model.LeaveTypes = new SelectList(leaveTypes, "Id", "Name", model.LeaveTypeId);
+
             return View(model);
         }
 
         // GET: LeaveRequests/Edit/5
+        /*
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.LeaveRequests == null)
@@ -111,10 +159,12 @@ namespace CustomerRelationsManagement.Web.Controllers
             ViewData["LeaveTypeId"] = new SelectList(_context.LeaveTypes, "Id", "Id", leaveRequest.LeaveTypeId);
             return View(leaveRequest);
         }
+        */
 
         // POST: LeaveRequests/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        /*
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("StartDate,EndDate,LeaveTypeId,DateRequested,RequestComments,Approved,Cancelled,RequestingEmployeeId,Id,DateCreated,DateModified")] LeaveRequest leaveRequest)
@@ -147,24 +197,52 @@ namespace CustomerRelationsManagement.Web.Controllers
             ViewData["LeaveTypeId"] = new SelectList(_context.LeaveTypes, "Id", "Id", leaveRequest.LeaveTypeId);
             return View(leaveRequest);
         }
+        */
 
         // POST: LeaveRequests/Delete/5
+        /*
+        [Authorize(Roles = Roles.Administrator)]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.LeaveRequests == null)
+            try
             {
-                return Problem("Entity set 'ApplicationDbContext.LeaveRequests'  is null.");
+                var leaveRequest = await leaveRequestRepository.GetAsync(id);
+
+                if (leaveRequest == null)
+                {
+                    return NotFound("Leave request not found.");
+                }
+
+                await leaveRequestRepository.DeleteAsync(id);
+
+                TempData["SuccessMessage"] = "Leave request deleted successfully.";
+                return RedirectToAction(nameof(Index));
             }
-            var leaveRequest = await _context.LeaveRequests.FindAsync(id);
-            if (leaveRequest != null)
+            catch (Exception ex)
             {
-                _context.LeaveRequests.Remove(leaveRequest);
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while deleting the leave request.");
             }
-            
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+        }
+        */
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Cancel(int id)
+        {
+            try
+            {
+                await leaveRequestRepository.CancelLeaveRequest(id);
+
+                TempData["SuccessMessage"] = "Leave request cancelled successfully.";
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred while cancelling the leave request.");
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while cancelling the leave request.");
+            }
+            return RedirectToAction(nameof(MyLeave));
         }
     }
 }

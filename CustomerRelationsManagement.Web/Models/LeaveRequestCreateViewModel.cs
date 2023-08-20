@@ -1,7 +1,5 @@
-﻿using CustomerRelationsManagement.Web.Data;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CustomerRelationsManagement.Web.Models
 {
@@ -9,13 +7,17 @@ namespace CustomerRelationsManagement.Web.Models
     {
         [Required]
         [Display(Name = "Start Date")]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
+        [DataType(DataType.Date)]
         public DateTime? StartDate { get; set; }
 
         [Required]
         [Display(Name = "End Date")]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
+        [DataType(DataType.Date)]
         public DateTime? EndDate { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Please select a valid leave type.")]
         [Display(Name = "Leave Type")]
         public int LeaveTypeId { get; set; }
 
@@ -30,6 +32,11 @@ namespace CustomerRelationsManagement.Web.Models
             if(StartDate > EndDate)
             {
                 yield return new ValidationResult("The start date must be before the end date", new[] { nameof(StartDate), nameof(EndDate) });
+            }
+
+            if(RequestComments?.Length > 250)
+            {
+                yield return new ValidationResult("Comments exceed the character limit", new[] { nameof(RequestComments) });
             }
         }
     }

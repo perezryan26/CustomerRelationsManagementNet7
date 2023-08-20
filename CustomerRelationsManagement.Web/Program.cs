@@ -7,6 +7,8 @@ using CustomerRelationsManagement.Web.Contracts;
 using CustomerRelationsManagement.Web.Repositories;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using CustomerRelationsManagement.Web.Services;
+using NuGet.Protocol;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,8 +27,6 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddTransient<IEmailSender>(s => new EmailSender("localhost", 25, "noreply@gmail.com"));
 
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-builder.Services.AddScoped<IClientRepository, ClientRepository>();
-builder.Services.AddScoped<IDealRepository, DealRepository>();
 builder.Services.AddScoped<ILeaveTypeRepository, LeaveTypeRepository>();
 builder.Services.AddScoped<ILeaveAllocationRepository, LeaveAllocationRepository>();
 builder.Services.AddScoped<ILeaveRequestRepository, LeaveRequestRepository>();
@@ -34,10 +34,17 @@ builder.Services.AddScoped<IPositionRepository, PositionRepository>();
 builder.Services.AddScoped<IAnnouncementRepository, AnnouncementRepository>();
 builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
 builder.Services.AddScoped<IProjectTaskRepository, ProjectTaskRepository>();
+builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 
 builder.Services.AddAutoMapper(typeof(MapperConfig));
 
+builder.Host.UseSerilog((ctx, lc) =>
+    lc.WriteTo.Console()
+    .ReadFrom.Configuration(ctx.Configuration));
+
 var app = builder.Build();
+
+app.UseSerilogRequestLogging();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

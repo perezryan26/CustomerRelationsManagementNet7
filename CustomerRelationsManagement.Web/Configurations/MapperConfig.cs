@@ -11,19 +11,18 @@ namespace CustomerRelationsManagement.Web.Configurations
         is also legal */
         public MapperConfig()
         {
-            CreateMap<Client, ClientViewModel>().ReverseMap();
-            CreateMap<Deal, DealViewModel>().ReverseMap();
-
-            CreateMap<LeaveType, LeaveTypeViewModel>().ReverseMap();
+            
             CreateMap<Employee, EmployeeListViewModel>().ReverseMap();
             CreateMap<Employee, EmployeeAllocationViewModel>().ReverseMap();
+            CreateMap<Employee, EmployeeViewModel>().ReverseMap();
+
+            CreateMap<LeaveType, LeaveTypeViewModel>().ReverseMap();
+
             CreateMap<LeaveAllocation, LeaveAllocationViewModel>().ReverseMap();
             CreateMap<LeaveAllocation, LeaveAllocationEditViewModel>().ReverseMap();
 
             CreateMap<LeaveRequest, LeaveRequestCreateViewModel>().ReverseMap();
             CreateMap<LeaveRequest, LeaveRequestViewModel>().ReverseMap();
-
-            CreateMap<Deal, DealCreateViewModel>().ReverseMap();
 
             CreateMap<Position, PositionViewModel>().ReverseMap();
 
@@ -31,8 +30,6 @@ namespace CustomerRelationsManagement.Web.Configurations
 
             CreateMap<Project, ProjectViewModel>().ReverseMap();
             CreateMap<Project, ProjectCreateViewModel>().ReverseMap();
-
-            CreateMap<Employee, EmployeeViewModel>().ReverseMap();
 
             CreateMap<ProjectTask, ProjectTaskViewModel>().ReverseMap();
             CreateMap<ProjectTask, ProjectTaskCreateViewModel>().ReverseMap();

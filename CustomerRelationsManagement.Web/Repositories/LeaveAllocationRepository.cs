@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using CustomerRelationsManagement.Web.Constants;
 using CustomerRelationsManagement.Web.Contracts;
 using CustomerRelationsManagement.Web.Data;
 using CustomerRelationsManagement.Web.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace CustomerRelationsManagement.Web.Repositories
@@ -14,16 +16,22 @@ namespace CustomerRelationsManagement.Web.Repositories
         private readonly UserManager<Employee> userManager;
         private readonly ILeaveTypeRepository leaveTypeRepository;
         private readonly IMapper mapper;
+        private readonly AutoMapper.IConfigurationProvider configurationProvider;
+        private readonly IEmailSender emailSender;
 
         public LeaveAllocationRepository(ApplicationDbContext context
             , UserManager<Employee> userManager
             , ILeaveTypeRepository leaveTypeRepository
-            , IMapper mapper) : base(context)
+            , IMapper mapper
+            , AutoMapper.IConfigurationProvider configurationProvider
+            , IEmailSender emailSender) : base(context)
         {
             this.context = context;
             this.userManager = userManager;
             this.leaveTypeRepository = leaveTypeRepository;
             this.mapper = mapper;
+            this.configurationProvider = configurationProvider;
+            this.emailSender = emailSender;
         }
 
         public async Task<bool> AllocationExists(string employeeId, int leaveTypeId, int period)
@@ -38,16 +46,15 @@ namespace CustomerRelationsManagement.Web.Repositories
             var allocations = await context.LeaveAllocations
                 .Include(q => q.LeaveType)
                 .Where(q => q.EmployeeId == employeeId)
+                .ProjectTo<LeaveAllocationViewModel>(configurationProvider)
                 .ToListAsync();
-
-            //var employee = await userManager.FindByIdAsync(employeeId);
 
             var employee = await context.Users
                .Include(q => q.Position)
                .FirstOrDefaultAsync(q => q.Id == employeeId);
 
             var employeeAllocationModel = mapper.Map<EmployeeAllocationViewModel>(employee);
-            employeeAllocationModel.LeaveAllocations = mapper.Map<List<LeaveAllocationViewModel>>(allocations);
+            employeeAllocationModel.LeaveAllocations = allocations;
             
             return employeeAllocationModel;
         }
@@ -56,6 +63,7 @@ namespace CustomerRelationsManagement.Web.Repositories
         {
             var allocation = await context.LeaveAllocations
                 .Include(q => q.LeaveType)
+                .ProjectTo<LeaveAllocationEditViewModel>(configurationProvider) 
                 .FirstOrDefaultAsync(q => q.Id == id);
 
             if(allocation == null)
@@ -63,9 +71,7 @@ namespace CustomerRelationsManagement.Web.Repositories
                 return null;
             }
 
-            //var employee = await userManager.FindByIdAsync(allocation.EmployeeId);
-
-            var model = mapper.Map<LeaveAllocationEditViewModel>(allocation);
+            var model = allocation;
             model.Employee = mapper.Map<EmployeeListViewModel>(await userManager.FindByIdAsync(allocation.EmployeeId));
 
             return model;
@@ -77,6 +83,7 @@ namespace CustomerRelationsManagement.Web.Repositories
             var period = DateTime.Now.Year;
             var leaveType = await leaveTypeRepository.GetAsync(leaveTypeId);
             var allocations = new List<LeaveAllocation>();
+            var employeesWithUpdatedAllocations = new List<Employee>();
 
             
             foreach(var employee in employees)
@@ -91,9 +98,16 @@ namespace CustomerRelationsManagement.Web.Repositories
                     Period = period,
                     NumberOfDays = leaveType.DefaultDays
                 });
-            }
 
+                employeesWithUpdatedAllocations.Add(employee);
+            }
             await AddRangeAsync(allocations);
+
+            foreach(var employee in employeesWithUpdatedAllocations)
+            {
+                await emailSender.SendEmailAsync(employee.Email, $"Leave Allocation Posted for {period}", $"Your {leaveType.Name} " +
+                    $"has been posted for the period of {period}. You have been given {leaveType.DefaultDays}.");
+            }
         } 
 
         public async Task<bool> UpdateEmployeeAllocation(LeaveAllocationEditViewModel model)
@@ -103,14 +117,20 @@ namespace CustomerRelationsManagement.Web.Repositories
             {
                 return false;
             }
+
             leaveAllocation.Period = model.Period;
             leaveAllocation.NumberOfDays = model.NumberOfDays;
             await UpdateAsync(leaveAllocation);
 
+            var user = await userManager.FindByIdAsync(leaveAllocation.EmployeeId);
+
+            await emailSender.SendEmailAsync(user.Email, $"Leave Allocation Updated for {leaveAllocation.Period}",
+                "Please review your leave allocations.");
+
             return true;
         }
 
-        public async Task<LeaveAllocation?> GetEmployeeAllocation(string employeeId, int leaveTypeId)
+        public async Task<LeaveAllocation> GetEmployeeAllocation(string employeeId, int leaveTypeId)
         {
             return await context.LeaveAllocations.FirstOrDefaultAsync(q => q.EmployeeId == employeeId && q.LeaveTypeId == leaveTypeId);
         }

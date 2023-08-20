@@ -1,34 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CustomerRelationsManagement.Web.Data;
 using CustomerRelationsManagement.Web.Models;
 using AutoMapper;
 using CustomerRelationsManagement.Web.Contracts;
-using CustomerRelationsManagement.Web.Repositories;
-using CustomerRelationsManagement.Web.Constants;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.CodeAnalysis;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CustomerRelationsManagement.Web.Controllers
 {
+    [Authorize]
     public class ProjectTasksController : Controller
     {
         private readonly IMapper mapper;
         private readonly IProjectTaskRepository projectTaskRepository;
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly UserManager<Employee> userManager;
+        private readonly ILogger<ProjectTasksController> logger;
 
-        public ProjectTasksController(IMapper mapper, IProjectTaskRepository projectTaskRepository, IHttpContextAccessor httpContextAccessor, UserManager<Employee> userManager)
+        public ProjectTasksController(IMapper mapper, IProjectTaskRepository projectTaskRepository, IHttpContextAccessor httpContextAccessor, UserManager<Employee> userManager, ILogger<ProjectTasksController> logger)
         {
             this.mapper = mapper;
             this.projectTaskRepository = projectTaskRepository;
             this.httpContextAccessor = httpContextAccessor;
             this.userManager = userManager;
+            this.logger = logger;
         }
 
         // GET: ProjectTasks/Details/5
@@ -54,6 +50,7 @@ namespace CustomerRelationsManagement.Web.Controllers
             }
             catch (Exception ex)
             {
+                logger.LogError(ex, "An error occurred while viewing details for the task.");
                 return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while viewing details for the task.");
             }
         }
@@ -97,7 +94,8 @@ namespace CustomerRelationsManagement.Web.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while saving the changes.");
+                logger.LogError(ex, "An error occurred while creating the project.");
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while creating the project.");
             }
 
             return View(model);
@@ -139,12 +137,15 @@ namespace CustomerRelationsManagement.Web.Controllers
                         return NotFound("Task not found.");
                     }
 
+                    /*
                     projectTask.Name = model.Name;
                     projectTask.Description = model.Description;
                     projectTask.DateDue = (DateTime)model.DateDue;
                     projectTask.TaskPriority = model.TaskPriority;
                     projectTask.IsComplete = model.IsComplete;
+                    */
 
+                    mapper.Map(model, projectTask);
                     await projectTaskRepository.UpdateAsync(projectTask);
 
                     TempData["SuccessMessage"] = "Task updated successfully.";
@@ -163,7 +164,8 @@ namespace CustomerRelationsManagement.Web.Controllers
                 }
                 catch (Exception ex)
                 {
-                    return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while saving the changes.");
+                    logger.LogError(ex, "An error occurred while saving the task changes.");
+                    return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while saving the task changes.");
                 }
             }
             return View(model);
@@ -191,9 +193,9 @@ namespace CustomerRelationsManagement.Web.Controllers
             }
             catch (Exception ex)
             {
+                logger.LogError(ex, "An error occurred while deleting the task.");
                 return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while deleting the task.");
             }
         }
-
     }
 }

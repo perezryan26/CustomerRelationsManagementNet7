@@ -42,15 +42,24 @@
 <div class="container">
     <h1>Projects</h1>
 
-    @foreach (var project in Model.Projects)
+    @if (Model.Projects.Count >= 1)
     {
-        <a asp-controller="Home" asp-action="ProjectDetails" asp-route-projectId="@project.Id">
-            <div class="card mb-2">
-                <div class="card-body">
-                    <h5 class="card-title">@project.Name</h5>
-                    <p class="card-text text-muted small">@project.Description</p>
+        @foreach (var project in Model.Projects)
+        {
+            <a asp-controller="Home" asp-action="ProjectDetails" asp-route-projectId="@project.Id">
+                <div class="card mb-2">
+                    <div class="card-body">
+                        <h5 class="card-title">@project.Name</h5>
+                        <p class="card-text text-muted small">@project.Description</p>
+                    </div>
                 </div>
-            </div>
-        </a>
+            </a>
+        }
     }
+    else
+    {
+        <p>Projects will be shown here</p>
+    }
+
 </div>
+

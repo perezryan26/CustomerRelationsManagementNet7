@@ -16,6 +16,7 @@
                 <select asp-for="LeaveTypeId" class="form-select" asp-items="Model?.LeaveTypes">
                     <option>Select Leave Type</option>
                 </select>
+                <span asp-validation-for="LeaveTypeId" class="text-danger"></span>
             </div>
             <br />
             <div class="row">
@@ -43,7 +44,7 @@
             </div>
             <br />
             <div class="form-group">
-                <a class="btn btn-secondary btn-block" asp-action="Index">Back to List</a>
+                <a class="btn btn-secondary btn-block" asp-action="MyLeave">Cancel</a>
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
         </form>

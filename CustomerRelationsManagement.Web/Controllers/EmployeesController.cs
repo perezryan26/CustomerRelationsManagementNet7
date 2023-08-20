@@ -4,6 +4,7 @@ using CustomerRelationsManagement.Web.Contracts;
 using CustomerRelationsManagement.Web.Data;
 using CustomerRelationsManagement.Web.Models;
 using CustomerRelationsManagement.Web.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -12,6 +13,7 @@ using System.Reflection;
 
 namespace CustomerRelationsManagement.Web.Controllers
 {
+    [Authorize(Roles = Roles.Administrator)]
     public class EmployeesController : Controller
     {
         private readonly UserManager<Employee> userManager;
@@ -19,54 +21,64 @@ namespace CustomerRelationsManagement.Web.Controllers
         private readonly ILeaveAllocationRepository leaveAllocationRepository;
         private readonly ILeaveTypeRepository leaveTypeRepository;
         private readonly IPositionRepository positionRepository;
+        private readonly IEmployeeRepository employeeRepository;
+        private readonly ILogger<EmployeesController> logger;
         private readonly ApplicationDbContext context;
 
         public EmployeesController(UserManager<Employee> userManager, IMapper mapper,
-            ILeaveAllocationRepository leaveAllocationRepository, ILeaveTypeRepository leaveTypeRepository, IPositionRepository positionRepository, ApplicationDbContext context)
+            ILeaveAllocationRepository leaveAllocationRepository,
+            ILeaveTypeRepository leaveTypeRepository,
+            IPositionRepository positionRepository,
+            IEmployeeRepository employeeRepository,
+            ILogger<EmployeesController> logger,
+            ApplicationDbContext context)
         {
             this.userManager = userManager;
             this.mapper = mapper;
             this.leaveAllocationRepository = leaveAllocationRepository;
             this.leaveTypeRepository = leaveTypeRepository;
             this.positionRepository = positionRepository;
+            this.employeeRepository = employeeRepository;
+            this.logger = logger;
             this.context = context;
         }
 
         // GET: EmployeesController.
         public async Task<IActionResult> Index()
         {
-            //var employees = await userManager.GetUsersInRoleAsync(Roles.User);
-            var employees = await context.Users
-                .Include(q => q.Position)
-                .ToListAsync();
+            try
+            {
+                var employees = await employeeRepository.GetAllAsync();
 
-            var model = mapper.Map<List<EmployeeListViewModel>>(employees);
-            return View(model);
+                var model = mapper.Map<List<EmployeeListViewModel>>(employees);
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred while retrieving employees.");
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while retrieving employees.");
+            }
         }
 
         // GET: EmployeesController/ViewAllocations/employeeId
         public async Task<ActionResult> ViewAllocations(string id)
         {
-            var model = await leaveAllocationRepository.GetEmployeeAllocations(id);
-            return View(model);
-        }
-
-        // GET: EmployeesController/EditAllocations/5
-        public async Task<ActionResult> EditAllocation(int id)
-        {
-            var model = await leaveAllocationRepository.GetEmployeeAllocation(id);
-            if(model == null)
+            try
             {
-                return NotFound();
+                var model = await leaveAllocationRepository.GetEmployeeAllocations(id);
+                return View(model);
             }
-            return View(model);
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred while retrieving employee allocations.");
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while retrieving employee allocations.");
+            }
         }
 
         public async Task<ActionResult> AssignPosition(string id)
         {
-            var model = await positionRepository.GetAllAsync();
-            var employee = await context.Users
-               .FirstOrDefaultAsync(q => q.Id == id);
+            var positions = await positionRepository.GetAllAsync();
+            var employee = await employeeRepository.GetAsync(id);
 
             if(employee == null)
             {
@@ -74,7 +86,8 @@ namespace CustomerRelationsManagement.Web.Controllers
             }  
 
             ViewBag.EmployeeId = id;
-            ViewBag.Positions = new SelectList(model, "Id", "Name", employee.PositionId);
+            ViewBag.Positions = new SelectList(positions, "Id", "Name", employee.PositionId);
+
             return View();
 
         }
@@ -85,8 +98,7 @@ namespace CustomerRelationsManagement.Web.Controllers
         {
             try
             {
-                var employee = await context.Users
-                    .FirstOrDefaultAsync(q => q.Id == id);
+                var employee = await employeeRepository.GetAsync(id);
 
                 if (employee == null)
                 {
@@ -94,29 +106,29 @@ namespace CustomerRelationsManagement.Web.Controllers
                 }
 
                 employee.PositionId = positionId;
-                context.Update(employee);
-                await context.SaveChangesAsync();
+                await employeeRepository.UpdateEmployeeAsync(employee);
+
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError(string.Empty, "An error has occured please try again");
+                logger.LogError(ex, "An error has occured when assigning a position, please try again.");
+                ModelState.AddModelError(string.Empty, "An error has occured when assigning a position, please try again.");
             }
 
-            var model = await positionRepository.GetAllAsync();
+            var positions = await positionRepository.GetAllAsync();
 
             ViewBag.EmployeeId = id;
-            ViewBag.Positions = new SelectList(model, "Id", "Name", positionId);
+            ViewBag.Positions = new SelectList(positions, "Id", "Name", positionId);
+
             return View();
         }
 
         public async Task<ActionResult> AssignDepartment(string id)
         {
-            var model = await context.Users
-               .FirstOrDefaultAsync(q => q.Id == id);
+            var employee = await employeeRepository.GetAsync(id);
 
-            //var model = await leaveAllocationRepository.GetEmployeeAllocation(id);
-            if (model == null)
+            if (employee == null)
             {
                 return NotFound(); 
             }
@@ -126,7 +138,7 @@ namespace CustomerRelationsManagement.Web.Controllers
                 .ToList();
 
             ViewBag.EmployeeId = id;
-            ViewBag.Departments = new SelectList(departments, model.Department);
+            ViewBag.Departments = new SelectList(departments, employee.Department);
 
             return View();
         }
@@ -135,60 +147,86 @@ namespace CustomerRelationsManagement.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> AssignDepartment(string id, string department)
         {
-            var departments = typeof(DepartmentType).GetFields(BindingFlags.Public | BindingFlags.Static)
-                .Select(f => f.GetValue(null).ToString())
-                .ToList();
+            var employee = await employeeRepository.GetAsync(id);
 
-            var model = await context.Users
-                    .FirstOrDefaultAsync(q => q.Id == id);
-
-            if (model == null)
+            if (employee == null)
             {
                 return NotFound();
             }
 
+            var departments = typeof(DepartmentType).GetFields(BindingFlags.Public | BindingFlags.Static)
+                .Select(f => f.GetValue(null).ToString())
+                .ToList();
+
             if (!departments.Contains(department))
             {
                 ViewBag.EmployeeId = id;
-                ViewBag.Departments = new SelectList(departments, model.Department);
+                ViewBag.Departments = new SelectList(departments, employee.Department);
                 return View(departments);
             }
 
             try
             {
-                model.Department = department;
-                context.Update(model);
-                await context.SaveChangesAsync();
+                employee.Department = department;
+                await employeeRepository.UpdateEmployeeAsync(employee);
+
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError(string.Empty, "An error has occured please try again");
+                logger.LogError(ex, "An error has occured when assigning a department, please try again.");
+                ModelState.AddModelError(string.Empty, "An error has occured when assigning a department, please try again.");
             }
 
             ViewBag.EmployeeId = id;
-            ViewBag.Departments = new SelectList(departments, model.Department);
+            ViewBag.Departments = new SelectList(departments, employee.Department);
             return View();
         }
+
+        // GET: EmployeesController/EditAllocations/5
+        public async Task<ActionResult> EditAllocation(int id)
+        {
+            var model = await leaveAllocationRepository.GetEmployeeAllocation(id);
+
+            if (model == null)
+            {
+                return NotFound("Employee allocation not found.");
+            }
+            return View(model);
+        }
+
 
         // POST: EmployeesController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> EditAllocation(int id, LeaveAllocationEditViewModel model)
         {  
-            try
+            if (ModelState.IsValid)
             {
-                if(ModelState.IsValid)
+                try
                 {
-                   if(await leaveAllocationRepository.UpdateEmployeeAllocation(model))
+                    if (await leaveAllocationRepository.UpdateEmployeeAllocation(model))
                     {
+                        TempData["SuccessMessage"] = "Employee allocation updated successfully.";
                         return RedirectToAction(nameof(ViewAllocations), new { id = model.EmployeeId });
                     }
                 }
-            }
-            catch(Exception ex)
-            {
-                ModelState.AddModelError(string.Empty, "An error has occurred. Please try again later.");
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!await leaveAllocationRepository.Exists(model.Id))
+                    {
+                        return NotFound("Employee allocation not found.");
+                    }
+                    else
+                    {
+                        return Conflict("Concurrency conflict. The employee allocation has been modified by another user.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "An error has occured when editing an employee allocation");
+                    ModelState.AddModelError(string.Empty, "An error has occured when editing an employee allocation");
+                }
             }
             model.Employee = mapper.Map<EmployeeListViewModel>(await userManager.FindByIdAsync(model.EmployeeId));
             model.LeaveType = mapper.Map<LeaveTypeViewModel>(await leaveTypeRepository.GetAsync(model.LeaveTypeId));

@@ -10,56 +10,74 @@ using CustomerRelationsManagement.Web.Contracts;
 using AutoMapper;
 using CustomerRelationsManagement.Web.Models;
 using CustomerRelationsManagement.Web.Repositories;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
+using CustomerRelationsManagement.Web.Constants;
 
 namespace CustomerRelationsManagement.Web.Controllers
 {
+    [Authorize(Roles = Roles.Administrator)]
     public class ProjectsController : Controller
     {
         private readonly ApplicationDbContext _context;
         private readonly IProjectRepository projectRepository;
         private readonly IMapper mapper;
+        private readonly ILogger<ProjectsController> logger;
 
-        public ProjectsController(ApplicationDbContext context, IProjectRepository projectRepository, IMapper mapper)
+        public ProjectsController(ApplicationDbContext context, IProjectRepository projectRepository, IMapper mapper, ILogger<ProjectsController> logger)
         {
             _context = context;
             this.projectRepository = projectRepository;
             this.mapper = mapper;
+            this.logger = logger;
         }
 
         // GET: Projects
         public async Task<IActionResult> Index()
         {
-            var model = await projectRepository.GetAllAsync();
-            return View(model);
+            try
+            {
+                var model = await projectRepository.GetAllAsync();
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred while retrieving projects.\"");
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while retrieving projects.");
+            }
         }
 
         // GET: Projects/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Positions == null)
+            if (id == null)
             {
-                return NotFound();
+                return NotFound("Project not found.");
             }
 
-            var model = await projectRepository.GetAsync(id);
-
-            if (model == null)
+            try
             {
-                return NotFound();
-            }
+                var model = await projectRepository.GetAsync(id);
 
-            return View(model);
+                if (model == null)
+                {
+                    return NotFound("Project not found.");
+                }
+
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred while viewing details for the project.");
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while viewing details for the project.");
+            }
         }
 
         // GET: Projects/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            var employees = _context.Users.Select(e => new EmployeeViewModel
-            {
-                Id = e.Id,
-                FirstName = e.FirstName,
-                LastName = e.LastName
-            }).ToList();
+            var employees = await projectRepository.GetEmployeesAsync();
 
             var model = new ProjectCreateViewModel
             {
@@ -76,55 +94,50 @@ namespace CustomerRelationsManagement.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ProjectCreateViewModel model)
         {
-            if (ModelState.IsValid)
+            try
             {
-                var project = mapper.Map<Project>(model);
-                project.IsComplete = false;
-                project.DateCreated = DateTime.Now;
-
-                foreach (var employeeId in model.EmployeeIds)
+                if (ModelState.IsValid)
                 {
-                    var employee = await _context.Users.FindAsync(employeeId);
-                    if(employee != null)
+                    var project = mapper.Map<Project>(model);
+                    project.IsComplete = false;
+                    project.DateCreated = DateTime.Now;
+
+                    foreach (var employeeId in model.EmployeeIds)
                     {
-                        project.Employees.Add(employee);
+                        var employee = await _context.Users.FindAsync(employeeId);
+                        if (employee != null)
+                        {
+                            project.Employees.Add(employee);
+                        }
                     }
+
+                    await projectRepository.AddAsync(project);
+
+                    TempData["SuccessMessage"] = "Project created successfully.";
+                    return RedirectToAction(nameof(Index));
                 }
-                await projectRepository.AddAsync(project);
-                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred while creating the project.");
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while creating the project.");
             }
 
-            model.Employees = _context.Users
-                .Select(e => new EmployeeViewModel
-                {
-                    Id = e.Id,
-                    FirstName = e.FirstName,
-                    LastName = e.LastName
-                }).ToList();
-
+            model.Employees = await projectRepository.GetEmployeesAsync();
             return View(model);
         }
 
         // GET: Projects/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.Positions == null)
-            {
-                return NotFound();
-            }
-
             var model = await projectRepository.GetAsync(id);
+
             if (model == null)
             {
-                return NotFound();
+                return NotFound("Project not found.");
             }
-            model.Employees = _context.Users
-                .Select(e => new EmployeeViewModel
-                {
-                    Id = e.Id,
-                    FirstName = e.FirstName,
-                    LastName = e.LastName
-                }).ToList();
+
+            model.Employees = await projectRepository.GetEmployeesAsync();
             return View(model);
         }
 
@@ -133,27 +146,48 @@ namespace CustomerRelationsManagement.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(ProjectViewModel model)
+        public async Task<IActionResult> Edit(int id, ProjectViewModel model)
         {
-            try
+            if (id != model.Id)
             {
-                if (ModelState.IsValid)
+                return BadRequest("IDs do not match.");
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
                 {
-                    await projectRepository.UpdateAsync(model);
+                    var project = await projectRepository.GetAsync(id);
+
+                    if (project == null)
+                    {
+                        return NotFound("Project not found.");
+                    }
+
+                    mapper.Map(model, project);
+                    await projectRepository.UpdateAsync(project);
+
+                    TempData["SuccessMessage"] = "Project updated successfully.";
                     return RedirectToAction(nameof(Index));
                 }
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError(string.Empty, "An error has occured please try again");
-            }
-            model.Employees = _context.Users
-                .Select(e => new EmployeeViewModel
+                catch (DbUpdateConcurrencyException)
                 {
-                    Id = e.Id,
-                    FirstName = e.FirstName,
-                    LastName = e.LastName
-                }).ToList();
+                    if (!await projectRepository.Exists(model.Id))
+                    {
+                        return NotFound("Project not found.");
+                    }
+                    else
+                    {
+                        return Conflict("Concurrency conflict. The project has been modified by another user.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "An error occurred while saving the project changes.");
+                    return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while saving the project changes.");
+                }
+            }
+            model.Employees = await projectRepository.GetEmployeesAsync();
             return View(model);
         }
 
@@ -163,18 +197,25 @@ namespace CustomerRelationsManagement.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Positions == null)
+            try
             {
-                return Problem("Entity set 'ApplicationDbContext.Positions'  is null.");
-            }
-            var project = await _context.Projects.FindAsync(id);
-            if (project != null)
-            {
-                _context.Projects.Remove(project);
-            }
+                var project = await projectRepository.GetAsync(id);
 
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+                if (project == null)
+                {
+                    return NotFound("Project not found.");
+                }
+
+                await projectRepository.DeleteAsync(id);
+
+                TempData["SuccessMessage"] = "Project deleted successfully.";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred while deleting the project.");
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while deleting the project.");
+            }
         }
     }
 }
