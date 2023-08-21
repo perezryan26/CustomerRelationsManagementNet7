@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using CustomerRelationsManagement.Web.Data;
-using CustomerRelationsManagement.Web.Contracts;
+using CustomerRelationsManagement.Data;
+using CustomerRelationsManagement.Application.Contracts;
 using AutoMapper;
-using CustomerRelationsManagement.Web.Models;
+using CustomerRelationsManagement.Common.Models;
 using Microsoft.AspNetCore.Authorization;
-using CustomerRelationsManagement.Web.Constants;
+using CustomerRelationsManagement.Common.Constants;
 
 namespace CustomerRelationsManagement.Web.Controllers
 {

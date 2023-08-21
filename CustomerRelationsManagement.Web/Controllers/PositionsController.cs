@@ -5,13 +5,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using CustomerRelationsManagement.Web.Data;
-using CustomerRelationsManagement.Web.Contracts;
+using CustomerRelationsManagement.Data;
+using CustomerRelationsManagement.Application.Contracts;
 using AutoMapper;
-using CustomerRelationsManagement.Web.Models;
-using CustomerRelationsManagement.Web.Repositories;
+using CustomerRelationsManagement.Common.Models;
+using CustomerRelationsManagement.Application.Repositories;
 using Microsoft.AspNetCore.Authorization;
-using CustomerRelationsManagement.Web.Constants;
+using CustomerRelationsManagement.Common.Constants;
 
 namespace CustomerRelationsManagement.Web.Controllers
 {

@@ -5,15 +5,15 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using CustomerRelationsManagement.Web.Data;
-using CustomerRelationsManagement.Web.Contracts;
+using CustomerRelationsManagement.Data;
+using CustomerRelationsManagement.Application.Contracts;
 using AutoMapper;
-using CustomerRelationsManagement.Web.Models;
-using CustomerRelationsManagement.Web.Repositories;
+using CustomerRelationsManagement.Common.Models;
+using CustomerRelationsManagement.Application.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
-using CustomerRelationsManagement.Web.Constants;
+using CustomerRelationsManagement.Common.Constants;
 
 namespace CustomerRelationsManagement.Web.Controllers
 {
@@ -58,7 +58,7 @@ namespace CustomerRelationsManagement.Web.Controllers
 
             try
             {
-                var model = await projectRepository.GetAsync(id);
+                var model = await projectRepository.GetProjectAsync(id);
 
                 if (model == null)
                 {
@@ -130,7 +130,7 @@ namespace CustomerRelationsManagement.Web.Controllers
         // GET: Projects/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            var model = await projectRepository.GetAsync(id);
+            var model = await projectRepository.GetProjectAsync(id);
 
             if (model == null)
             {
@@ -157,15 +157,14 @@ namespace CustomerRelationsManagement.Web.Controllers
             {
                 try
                 {
-                    var project = await projectRepository.GetAsync(id);
+                    var project = await projectRepository.GetProjectAsync(id);
 
                     if (project == null)
                     {
                         return NotFound("Project not found.");
                     }
 
-                    mapper.Map(model, project);
-                    await projectRepository.UpdateAsync(project);
+                    await projectRepository.UpdateAsync(model);
 
                     TempData["SuccessMessage"] = "Project updated successfully.";
                     return RedirectToAction(nameof(Index));
@@ -199,7 +198,7 @@ namespace CustomerRelationsManagement.Web.Controllers
         {
             try
             {
-                var project = await projectRepository.GetAsync(id);
+                var project = await projectRepository.GetProjectAsync(id);
 
                 if (project == null)
                 {

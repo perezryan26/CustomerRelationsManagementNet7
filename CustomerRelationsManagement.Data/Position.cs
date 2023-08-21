@@ -1,4 +1,4 @@
-﻿namespace CustomerRelationsManagement.Web.Data
+﻿namespace CustomerRelationsManagement.Data
 {
     public class Position
     {

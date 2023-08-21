@@ -1,9 +1,8 @@
-﻿using CustomerRelationsManagement.Web.Configurations.Entities;
+﻿using CustomerRelationsManagement.Data.Configurations.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using CustomerRelationsManagement.Web.Models;
 
-namespace CustomerRelationsManagement.Web.Data
+namespace CustomerRelationsManagement.Data
 {
     public class ApplicationDbContext : IdentityDbContext<Employee>
     {

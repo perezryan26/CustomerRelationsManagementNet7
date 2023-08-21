@@ -1,9 +1,8 @@
-﻿using CustomerRelationsManagement.Web.Data.Migrations;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.Contracts;
 
-namespace CustomerRelationsManagement.Web.Data
+namespace CustomerRelationsManagement.Data
 {
     public class Employee : IdentityUser
     {

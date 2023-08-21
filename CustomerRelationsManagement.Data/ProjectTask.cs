@@ -1,7 +1,7 @@
-﻿using CustomerRelationsManagement.Web.Constants;
+﻿using CustomerRelationsManagement.Common.Constants;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace CustomerRelationsManagement.Web.Data
+namespace CustomerRelationsManagement.Data
 {
     public class ProjectTask : BaseEntity
     {

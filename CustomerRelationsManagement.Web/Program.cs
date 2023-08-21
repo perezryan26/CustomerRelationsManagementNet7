@@ -1,14 +1,17 @@
-using CustomerRelationsManagement.Web.Data;
+using CustomerRelationsManagement.Data;
+using CustomerRelationsManagement.Common;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using AutoMapper;
 using CustomerRelationsManagement.Web.Configurations;
-using CustomerRelationsManagement.Web.Contracts;
-using CustomerRelationsManagement.Web.Repositories;
+using CustomerRelationsManagement.Application.Contracts;
+using CustomerRelationsManagement.Application.Repositories;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using CustomerRelationsManagement.Web.Services;
 using NuGet.Protocol;
 using Serilog;
+using CustomerRelationsManagement.Web;
+
 
 var builder = WebApplication.CreateBuilder(args);
 

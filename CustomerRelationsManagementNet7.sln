@@ -5,7 +5,11 @@ VisualStudioVersion = 17.6.33829.357
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CustomerRelationsManagement.Web", "CustomerRelationsManagement.Web\CustomerRelationsManagement.Web.csproj", "{08996D9E-020B-4C66-8D9C-ACA755C0ABDE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomerRelationsManagement.Data", "CustomerRelationsManagement.Data\CustomerRelationsManagement.Data.csproj", "{7AB8A3BB-379D-4B65-997D-38A940C5737E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CustomerRelationsManagement.Data", "CustomerRelationsManagement.Data\CustomerRelationsManagement.Data.csproj", "{7AB8A3BB-379D-4B65-997D-38A940C5737E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CustomerRelationsManagement.Common", "CustomerRelationsManagement.Common\CustomerRelationsManagement.Common.csproj", "{3A5128BB-DAFD-4402-8041-20804AA251BD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomerRelationsManagement.Application", "CustomerRelationsManagement.Application\CustomerRelationsManagement.Application.csproj", "{31B73E0F-4436-460D-9256-5758725C3DB2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +25,14 @@ Global
 		{7AB8A3BB-379D-4B65-997D-38A940C5737E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7AB8A3BB-379D-4B65-997D-38A940C5737E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7AB8A3BB-379D-4B65-997D-38A940C5737E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3A5128BB-DAFD-4402-8041-20804AA251BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A5128BB-DAFD-4402-8041-20804AA251BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A5128BB-DAFD-4402-8041-20804AA251BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3A5128BB-DAFD-4402-8041-20804AA251BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{31B73E0F-4436-460D-9256-5758725C3DB2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{31B73E0F-4436-460D-9256-5758725C3DB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{31B73E0F-4436-460D-9256-5758725C3DB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{31B73E0F-4436-460D-9256-5758725C3DB2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

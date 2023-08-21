@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using CustomerRelationsManagement.Web.Contracts;
-using CustomerRelationsManagement.Web.Data;
-using CustomerRelationsManagement.Web.Models;
-using CustomerRelationsManagement.Web.Repositories;
+using CustomerRelationsManagement.Application.Contracts;
+using CustomerRelationsManagement.Data;
+using CustomerRelationsManagement.Common.Models;
+using CustomerRelationsManagement.Application.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
