@@ -4,7 +4,7 @@ namespace CustomerRelationsManagement.Common.Models
 {
     public class AdminLeaveRequestViewModel
     {
-        [Display(Name = "Total number of requests")]
+        [Display(Name = "Total # of requests")]
         public int TotalRequests { get; set; }
 
         [Display(Name = "Approved Requests")]

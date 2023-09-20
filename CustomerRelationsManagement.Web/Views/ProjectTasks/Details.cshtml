@@ -4,59 +4,94 @@
     ViewData["Title"] = "Task Details";
 }
 
-<h1>Task Details</h1>
+<h1><strong>Task Details</strong></h1>
+<div>
+        <div class="row">
+            <div class="col-md-4">
+                <h4>Name:</h4>
+            </div>
+            <div class="col-md-8">
+                <h4>@Model.Name</h4>
+            </div>
+        </div>
+
+        <br />
+
+        <div class="row">
+            <div class="col-md-4">
+                <h4>Description:</h4>
+            </div>
+            <div class="col-md-8">
+                <h4>@Model.Description</h4>
+            </div>
+        </div>
+
+        <br />
+
+        <div class="row">
+            <div class="col-md-4">
+                <h4>Status:</h4>
+            </div>
+            <div class="col-md-8">
+                @if (Model.IsComplete)
+                {
+                    <span class="badge bg-success">Completed</span>
+                }
+                else
+                {
+                    <span class="badge bg-warning">In-progress</span>
+                }
+            </div>
+        </div>
+
+        <br />
+
+        <div class="row">
+            <div class="col-md-4">
+                <h4>Task Priority:</h4>
+            </div>
+            <div class="col-md-8">
+                @if (Model.TaskPriority == TaskPriority.Low)
+                {
+                    <span class="badge bg-info">@Model.TaskPriority</span>
+                }
+                else if (Model.TaskPriority == TaskPriority.Medium)
+                {
+                    <span class="badge bg-warning">@Model.TaskPriority</span>
+                }
+                else
+                {
+                    <span class="badge bg-danger">@Model.TaskPriority</span>
+                }
+
+            </div>
+        </div>
+
+        <br />
+
+        <div class="row">
+            <div class="col-md-4">
+                <h4>Due Date:</h4>
+            </div>
+            <div class="col-md-8">
+                <h4>@Model.DateDue</h4>
+            </div>
+        </div>
+
+        <br />
+
+        <div class="row">
+            <div class="col-md-4">
+                <h4>Author:</h4>
+            </div>
+            <div class="col-md-8">
+                <h4>@Model.Employee.Firstname @Model.Employee.Lastname</h4>
+            </div>
+        </div>
+</div>
 
 <div>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-5">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class="col-sm-7">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt class="col-sm-5">
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd class="col-sm-7">
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-        <dt class="col-sm-5">
-            @Html.DisplayNameFor(model => model.TaskPriority)
-        </dt>
-        <dd class="col-sm-7">
-            @Html.DisplayFor(model => model.TaskPriority)
-        </dd>
-        <dt class = "col-sm-5">
-            @Html.DisplayNameFor(model => model.Employee)
-        </dt>
-        <dd class = "col-sm-7">
-            @Html.DisplayFor(model => model.Employee.Firstname)
-        </dd>
-        <dt class="col-sm-5">
-            @Html.DisplayNameFor(model => model.IsComplete)
-        </dt>
-        @if (Model.IsComplete)
-        {
-            <dd class="col-sm-7">Complete</dd>
-        }
-        else
-        {
-            <dd class="col-sm-7">In-Progress</dd>
-        }
-        @if(Model.DateDue != null)
-        {
-            <dt class="col-sm-5">
-                @Html.DisplayNameFor(model => model.DateDue)
-            </dt>
-            <dd class="col-sm-7">
-                @Html.DisplayFor(model => model.DateDue)
-            </dd>
-        }
-        
-    </dl>
-</div>
-<div>
-    <a asp-controller="Home" asp-action="ProjectDetails" asp-route-projectId="@Model?.ProjectId" class="btn btn-dark">Back to Project</a>
-    <a asp-action="Edit" class="btn btn-warning" asp-route-id="@Model?.Id">Edit</a>
+    <br />
+    <a asp-controller="Home" asp-action="ProjectDetails" asp-route-projectId="@Model?.ProjectId" class="btn btn-dark">Back</a>
+    <a asp-action="Edit" class="btn btn-primary" asp-route-id="@Model?.Id">Edit</a>
 </div>

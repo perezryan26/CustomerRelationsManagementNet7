@@ -4,6 +4,54 @@
     ViewData["Title"] = "Project Details";
 }
 
+<style>
+    .team-member {
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        border-bottom: 1px solid #ddd;Team MembersTeam Members
+
+
+    }
+
+        .team-member img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 20px;
+        }
+</style>
+
+<div class="bg-primary py-4 text-white text-center rounded-top">
+    <h1 class="text-white"><strong>@Model.Project.Name</strong></h1>
+    <h2 class="text-white"><i>@Model.Project.Description</i></h2>
+</div>
+
+<div class="container mt-4">
+    <div class="row mb-3">
+        <div class="col-md-2 font-weight-bold">Status</div>
+        <div class="col-md-10">
+            @if(Model.Project.IsComplete)
+            {
+                <span class="badge bg-success rounded-3">Complete</span>
+            }
+            else
+            {
+                <span class="badge bg-danger rounded-3">In-progress</span>
+            }
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-md-2 font-weight-bold">Team Members</div>
+        <div class="col-md-10">
+            @foreach(var teamMember in Model.Project.Employees)
+            {
+                <span class="badge bg-light text-dark rounded-3">@teamMember.FirstName @teamMember.LastName</span>
+            }
+        </div>
+    </div>
+</div>
+
 @if (TempData["ErrorMessage"] != null)
 {
     <div class="alert alert-danger">
@@ -19,39 +67,49 @@
     </div>
 }
 
-<a class="btn btn-warning text-white" asp-controller="Home" asp-action="Index" >Back To Dashboard</a>
-<h1>@Model.Project.Name</h1>
-<h2>Description: @Model.Project.Description</h2>
-<h2>Teammates</h2>
-<ul>
-    @foreach (var employee in Model.Project.Employees)
-    {
-        <li>@employee.FirstName @employee.LastName</li>
-    }
-</ul>
-
-<a class="btn btn-warning text-white" asp-controller="Home" asp-action="CreateTask" asp-route-projectId="@Model.Project.Id">Add Task</a>
+<p>
+    <a asp-controller="Home" asp-action="CreateTask" asp-route-projectId="@Model.Project.Id" class="btn btn-primary">
+        New Task <i class="ti ti-plus fs-3 "></i>
+    </a>
+</p>
 
 <div>
-    <hr />
-    <h1>Tasks</h1>
-    <div class="container">
+    <div class="card p-3">
         <div class="row">
             @foreach (var projectTask in Model.ProjectTasks)
             {
                 <div class="col-md-4 mb-4">
                     <div class="card">
-                        <div class="card-header">
-                            @projectTask.Name
+                        <div class="card-header overflow-hidden">
+                            <div style="display: flex; align-items: flex-start;">
+                                <h3 style="margin-right: 10px;"><span class="@GetPriorityBadgeClass(projectTask.TaskPriority)">@projectTask.TaskPriority</span></h3>
+                                <h2>@projectTask.Name</h2>
+                            </div>
+                            <div>
+                                <div class="d-flex align-items-center justify-content-between">
+                                @if (!projectTask.DateDue.Equals(DateTime.MinValue))
+                                {
+                                        <p class="m-0"><i style="color: #FA896B;" class="far fa-calendar-alt fa-lg mr-2"></i>&nbsp;&nbsp;&nbsp;<strong>@string.Format("{0:MMMM dd, yyyy}", projectTask.DateDue)</strong></p>
+                                }
+
+                                @if(projectTask.IsComplete)
+                                {
+                                        <h1><span class="badge bg-success rounded-3 ml-auto">Complete</span></h1>
+                                }
+                                else
+                                {
+                                    <h1><span class="badge bg-danger rounded-3 ml-auto">In-Progress</span></h1>
+                                }
+                                </div>
+                            </div>
                         </div>
                         <div class="card-body">
                             <p class="card-text">@projectTask.Description</p>
-                            <p class="card-text">
-                                Priority: <span class="@GetPriorityBadgeClass(projectTask.TaskPriority)">@projectTask.TaskPriority</span>
-                            </p>
-                            <a class="btn btn-warning text-white" asp-controller="ProjectTasks" asp-action="Details" asp-route-id="@projectTask.Id">Details</a>
-                            <a class="btn btn-warning text-white" asp-controller="ProjectTasks" asp-action="Edit" asp-route-id="@projectTask.Id">Edit</a>
-                            <button data-id="@projectTask.Id" class="btn btn-danger deleteBtn" type="button"><i class="far fa-trash-alt"></i></button>
+                            <div class="d-flex justify-content-center align-items-center">
+                                <a class="btn btn-light text-dark mx-1" asp-controller="ProjectTasks" asp-action="Details" asp-route-id="@projectTask.Id"><i class="ti ti-search fs-8"></i></a>
+                                <a class="btn btn-light text-dark mx-1" asp-controller="ProjectTasks" asp-action="Edit" asp-route-id="@projectTask.Id"><i class="ti ti-edit fs-8"></i></a>
+                                <button data-id="@projectTask.Id" class="btn btn-light deleteBtn mx-1" type="button"><i class="ti ti-trash fs-8"></i></button>
+                            </div>
                         </div>
                     </div>
                 </div>

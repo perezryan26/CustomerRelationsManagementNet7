@@ -1,12 +1,11 @@
 ﻿@model CustomerRelationsManagement.Common.Models.LeaveTypeViewModel
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Create Leave Type";
 }
 
-<h1>Create Leave Type</h1>
+<h1><strong>Create Leave Type</strong></h1>
 
-<hr />
 <div class="row">
     <div class="col-md-12">
         <form asp-action="Create">
@@ -16,6 +15,7 @@
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
+            <br />
             <div class="form-group">
                 <label asp-for="DefaultDays" class="control-label"></label>
                 <input asp-for="DefaultDays" class="form-control" />
@@ -23,7 +23,7 @@
             </div>
             <br />
             <div class="form-group">
-                <a asp-action="Index" class="btn btn-dark"> Back to List</a> &nbsp;
+                <a asp-action="Index" class="btn btn-secondary"> Back to List</a> &nbsp;
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
         </form>

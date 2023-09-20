@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<CustomerRelationsManagement.Common.Models.ProjectViewModel>
 
 @{
-    ViewData["Title"] = "Project Index";
+    ViewData["Title"] = "Projects";
 }
 
 @if (TempData["ErrorMessage"] != null)
@@ -19,17 +19,17 @@
     </div>
 }
 
-<h1>Project Index</h1>
+<h1><strong>Projects</strong></h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn btn-primary">
+        New Project <i class="ti ti-plus fs-3 "></i>
+    </a>
 </p>
+
 <table class="table">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.IsComplete)
-            </th>
             <th>
                 @Html.DisplayNameFor(model => model.Name)
             </th>
@@ -42,22 +42,15 @@
             <th>
                 @Html.DisplayNameFor(model => model.Employees)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsComplete)
+            </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
 @foreach (var item in Model) {
         <tr>
-            <td>
-                    @if(item.IsComplete)
-                    {
-                        <span class="text-success">Complete</span>
-                    }
-                    else
-                    {
-                        <span class="text-pending">In-Progress</span>
-                    }
-            </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
@@ -71,14 +64,23 @@
                 <ul>
                         @foreach (var employee in item.Employees)
                         {
-                            <li>@employee.FirstName @employee.LastName</li>
+                            <li><span class="badge bg-light rounded-3 text-dark mb-2">@employee.FirstName @employee.LastName</span></li>
                         }
                 </ul>
             </td>
             <td>
-                    <a class="btn btn-warning text-white" asp-action="Edit" asp-route-id="@item.Id"><i class="fas fa-pencil-alt"></i></a>
-                    <a class="btn btn-info text-white" asp-action="Details" asp-route-id="@item.Id"><i class="fas fa-info-circle"></i></a>
-                    <button data-id="@item.Id" class="btn btn-danger deleteBtn" type="button"><i class="far fa-trash-alt"></i></button>
+                @if (item.IsComplete)
+                {
+                        <span class="badge bg-primary rounded-3">Complete</span>
+                }
+                else
+                {
+                        <span class="badge bg-secondary rounded-3">In-Progress</span>
+                }
+            </td>
+            <td>
+                    <a class="btn btn-dark btn-sm mr-1" asp-action="Edit" asp-route-id="@item.Id"><i class="fas fa-edit"></i></a>
+                    <button data-id="@item.Id" class="btn btn-danger btn-sm deleteBtn mr-1" type="button"><i class="far fa-trash-alt"></i></button>
             </td>
         </tr>
 }

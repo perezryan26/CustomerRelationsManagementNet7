@@ -4,7 +4,7 @@
     ViewData["Title"] = "Employees";
 }
 
-<h1>Employees</h1>
+<h1><strong>Employees</strong></h1>
 
 <table class="table">
     <thead>
@@ -22,10 +22,10 @@
                 @Html.DisplayNameFor(model => model.DateJoined)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Position)
+                @Html.DisplayNameFor(model => model.Department)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Department)
+                @Html.DisplayNameFor(model => model.Position)
             </th>
             <th></th>
         </tr>
@@ -46,14 +46,14 @@
                 @Html.DisplayFor(modelItem => item.DateJoined)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Position.Name)
-            </td>
-            <td>
                 @Html.DisplayFor(modelItem => item.Department)
             </td>
             <td>
-                <a asp-action="ViewAllocations" class="btn btn-sm btn-primary" asp-route-id="@item.Id">View Allocations</a>
-                <a asp-action="AssignPosition" class="btn btn-sm btn-secondary" asp-route-id="@item.Id">Assign Position</a>
+                @Html.DisplayFor(modelItem => item.Position.Name)
+            </td>
+            <td>
+                <a asp-action="ViewAllocations" class="btn btn-sm btn-primary mb-2" asp-route-id="@item.Id">View Allocations</a>
+                <a asp-action="AssignPosition" class="btn btn-sm btn-secondary mb-2" asp-route-id="@item.Id">Assign Position</a>
                 <a asp-action="AssignDepartment" class="btn btn-sm btn-dark" asp-route-id="@item.Id">Assign Department</a>
             </td>
         </tr>

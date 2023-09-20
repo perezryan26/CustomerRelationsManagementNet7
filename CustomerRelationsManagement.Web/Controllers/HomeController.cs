@@ -12,7 +12,6 @@ using System.Diagnostics;
 
 namespace CustomerRelationsManagement.Web.Controllers
 {
-    [Authorize]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -42,7 +41,8 @@ namespace CustomerRelationsManagement.Web.Controllers
             this.announcementRepository = announcementRepository;
         }
 
-        public async Task<IActionResult> Index()
+        [Authorize]
+        public async Task<IActionResult> Dashboard()
         {
             var announcements = mapper.Map<List<AnnouncementViewModel>>(await announcementRepository.GetRecentAnnouncements());
             
@@ -57,16 +57,23 @@ namespace CustomerRelationsManagement.Web.Controllers
             return View(contents);
         }
 
+        public ActionResult Index()
+        {
+            return View();
+        }
+
+        [Authorize]
         public ActionResult CreateTask(int projectId)
         {
             return RedirectToAction("Create", "ProjectTasks", new { projectId = projectId});
         }
 
+        [Authorize]
         public async Task<IActionResult> ProjectDetails(int projectId)
         {
             try
             {
-                var project = await projectRepository.GetAsync(projectId);
+                var project = await projectRepository.GetProjectAsync(projectId);
 
                 if (project == null)
                 {
@@ -77,7 +84,7 @@ namespace CustomerRelationsManagement.Web.Controllers
 
                 var model = new ProjectProjectTasksViewModel
                 {
-                    Project = mapper.Map<ProjectViewModel>(project),
+                    Project = project,
                     ProjectTasks = projectTasks
                 };
 

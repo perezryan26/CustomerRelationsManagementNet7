@@ -1,0 +1,96 @@
+﻿@model ProjectsAndAnnouncementsViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+@* Display success message if present *@
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+<style>
+    .announcement-card {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .card-content {
+        flex: 1;
+    }
+</style>
+
+<div class="text-center">
+    <h1 class="display-4"><strong>Dashboard</strong></h1>
+</div>
+
+<h1>Announcements</h1>
+<br />
+<br />
+<br />
+<div class="container">
+    <div class="row">
+        @foreach (var announcement in Model.Announcements)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="announcement-card card">
+                    <div class="card-content card-body">
+                        <h5 class="card-title">@announcement.Title</h5>
+                        <p class="card-text">@announcement.Description</p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+
+
+
+
+<br />
+
+<div class="container">
+    <h1>Projects</h1>
+    <br />
+    @if (Model.Projects.Count >= 1)
+    {
+        @foreach (var project in Model.Projects)
+        {
+            <a asp-controller="Home" asp-action="ProjectDetails" asp-route-projectId="@project.Id">
+                <div class="card mb-4">
+                    <div class="card-header overflow-hidden">
+                        <h5 class="card-title">@project.Name</h5>
+                        @if (project.IsComplete)
+                        {
+                            <span class="card-text text-success">Complete</span>
+                        }
+                        else
+                        {
+                            <span class="card-text text-danger">Incomplete</span>
+                        }
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text text-muted"><i>@project.Description</i></p>
+                    </div>
+                </div>
+            </a>
+        }
+    }
+    else
+    {
+        <p>Projects will be shown here</p>
+    }
+
+</div>
+

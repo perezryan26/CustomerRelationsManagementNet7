@@ -6,13 +6,12 @@ namespace CustomerRelationsManagement.Common.Models
     {
         public int Id { get; set; }
 
-        [Display(Name = "Leave Type Name")]
         [Required]
         public string Name { get; set; }
 
-        [Display(Name = "Default Number Of Days")]
+        [Display(Name = "Default # Of Days")]
         [Required]
-        [Range(1, 25, ErrorMessage = "Please enter a valid number")]
+        [Range(1, 28, ErrorMessage = "Please enter a valid number")]
         public int DefaultDays { get; set; }
     }
 }

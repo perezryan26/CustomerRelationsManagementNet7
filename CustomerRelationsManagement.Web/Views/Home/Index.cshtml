@@ -1,65 +1,17 @@
-﻿@model ProjectsAndAnnouncementsViewModel
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
 @{
-    ViewData["Title"] = "Dashboard";
 }
 
-@if (TempData["ErrorMessage"] != null)
-{
-    <div class="alert alert-danger">
-        @TempData["ErrorMessage"]
+<div class="container mt-5">
+    <div class="jumbotron">
+        <h1 class="display-4">
+            <span class="d-inline-block align-middle"><strong>Welcome to <i class="ti ti-chart-pie fs-11"></i> Employee Odyssey</strong></span>
+        </h1>
+        <p class="lead">Manage your projects, tasks, leave allocations, and leave requests <em>efficiently</em>.</p>
+        <hr class="my-4">
+        <p>Get started by registering so you can start <strong>exploring</strong> the various functionalities of the project.</p>
+        <a class="btn btn-primary btn-lg" href="https://www.linkedin.com/in/ryan-ray-perez/" role="button">Learn more about the developer <i class="ti ti-user fs-11"></i></a>
     </div>
-}
-
-@* Display success message if present *@
-@if (TempData["SuccessMessage"] != null)
-{
-    <div class="alert alert-success">
-        @TempData["SuccessMessage"]
-    </div>
-}
-
-<div class="text-center">
-    <h1 class="display-4">User Dashboard</h1>
-    <p>Welcome to the Customer Relations Management System!</p>
 </div>
-
-<div class="container">
-    <h1>Announcements</h1>
-
-    @foreach (var announcement in Model.Announcements)
-    {
-        <div class="card mb-2">
-            <div class="card-body">
-                <h5 class="card-title">@announcement.Title</h5>
-                <p class="card-text text-muted small">@announcement.Description</p>
-            </div>
-        </div>
-    }
-</div>
-
-<br />
-
-<div class="container">
-    <h1>Projects</h1>
-
-    @if (Model.Projects.Count >= 1)
-    {
-        @foreach (var project in Model.Projects)
-        {
-            <a asp-controller="Home" asp-action="ProjectDetails" asp-route-projectId="@project.Id">
-                <div class="card mb-2">
-                    <div class="card-body">
-                        <h5 class="card-title">@project.Name</h5>
-                        <p class="card-text text-muted small">@project.Description</p>
-                    </div>
-                </div>
-            </a>
-        }
-    }
-    else
-    {
-        <p>Projects will be shown here</p>
-    }
-
-</div>
-

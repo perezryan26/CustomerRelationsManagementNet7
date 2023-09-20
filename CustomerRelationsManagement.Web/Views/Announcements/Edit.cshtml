@@ -4,9 +4,8 @@
     ViewData["Title"] = "Edit Announcement";
 }
 
-<h1>Edit Announcement</h1>
+<h1><strong>Edit Announcement</strong></h1>
 
-<hr />
 <div class="row">
     <div class="col-md-12">
         <form asp-action="Edit">
@@ -17,11 +16,13 @@
                 <input asp-for="Title" class="form-control" />
                 <span asp-validation-for="Title" class="text-danger"></span>
             </div>
+            <br />
             <div class="form-group">
                 <label asp-for="Description" class="control-label"></label>
                 <textarea asp-for="Description" class="form-control"></textarea>
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
+            <br />
             <div class="form-group">
                 <a asp-action="Index" class="btn btn-dark">Back to List</a>
                 <input type="submit" value="Save" class="btn btn-primary" />

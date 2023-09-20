@@ -2,7 +2,7 @@
 using CustomerRelationsManagement.Data;
 using CustomerRelationsManagement.Common.Models;
 
-namespace CustomerRelationsManagement.Web.Configurations
+namespace CustomerRelationsManagement.Application.Configurations
 {
     public class MapperConfig : Profile
     {

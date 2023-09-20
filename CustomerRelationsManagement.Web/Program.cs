@@ -3,7 +3,7 @@ using CustomerRelationsManagement.Common;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using AutoMapper;
-using CustomerRelationsManagement.Web.Configurations;
+using CustomerRelationsManagement.Application.Configurations;
 using CustomerRelationsManagement.Application.Contracts;
 using CustomerRelationsManagement.Application.Repositories;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -24,6 +24,7 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddDefaultIdentity<Employee>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
+
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddControllersWithViews();
 

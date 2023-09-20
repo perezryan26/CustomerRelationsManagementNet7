@@ -4,10 +4,9 @@
     ViewData["Title"] = "Create Task";
 }
 
-<h1>Create Task</h1>
+<h1><strong>Create Task</strong></h1>
 
-<h4>ProjectTaskViewModel</h4>
-<hr />
+<br />
 <div class="row">
     <div class="col-md-12">
         <form asp-action="Create">
@@ -17,11 +16,13 @@
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
+            <br />
             <div class="form-group">
                 <label asp-for="Description" class="control-label"></label>
                 <input asp-for="Description" class="form-control" />
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
+            <br />
             <div class="form-group">
                 @Html.LabelFor(model => model.TaskPriority)
                 @Html.DropDownListFor(model => model.TaskPriority, Enum.GetValues(typeof(TaskPriority)).Cast<TaskPriority>().Select(p =>
@@ -30,7 +31,9 @@
                 Text = p.ToString(),
                 Value = p.ToString()
                 }), "Select Priority", new { @class = "form-control" })
+                <span asp-validation-for="TaskPriority" class="text-danger"></span>
             </div>
+            <br />
             <div class="form-group">
                 <label asp-for="DateDue" class="control-label"></label>
                 <input asp-for="DateDue" class="form-control" />
@@ -38,7 +41,7 @@
             </div>
             <br />
             <div class="form-group">
-                <a asp-controller="Home" asp-action="ProjectDetails" asp-route-projectId="@Model?.ProjectId" class="btn btn-dark">Back to Project</a>
+                <a class="btn btn-secondary" asp-controller="Home" asp-action="ProjectDetails" asp-route-projectId="@Model?.ProjectId">Back</a>
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
             @Html.HiddenFor(model => model.ProjectId)

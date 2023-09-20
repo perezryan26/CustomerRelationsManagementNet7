@@ -1,0 +1,39 @@
+﻿@page
+@model ConfirmEmailModel
+@{
+    ViewData["Title"] = "Confirm email";
+}
+
+
+
+<head>
+    <link rel="stylesheet" href="~/css/styles.min.css" />
+</head>
+
+<body>
+    <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
+         data-sidebar-position="fixed" data-header-position="fixed">
+        <div class="position-relative overflow-hidden radial-gradient min-vh-100 d-flex align-items-center justify-content-center">
+            <div class="d-flex align-items-center justify-content-center w-100">
+                <div class="row justify-content-center w-100">
+                    <div class="col-md-8 col-lg-6 col-xxl-3">
+                        <div class="card mb-0">
+                            <div class="card-body">
+                                <a href="./index.html" class="text-nowrap logo-img text-center d-block py-3 w-100">
+                                    <h1 class="display-8">
+                                        <span class="align-middle">
+                                            <i class="ti ti-chart-pie fs-11"></i>
+                                        </span>
+                                        <span class="d-inline-block align-middle"><strong>Employee Odyssey</strong></span>
+                                    </h1>
+                                </a>
+                                <p class="text-center">Your Employee Manager</p>
+                                <partial name="_StatusMessage" model="Model.StatusMessage" class="text-center"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>

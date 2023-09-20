@@ -17,7 +17,6 @@ namespace CustomerRelationsManagement.Data
         
         public DateTime DateOfBirth { get; set; }
         public DateTime DateJoined { get; set; }
-
         public ICollection<Project>? Projects { get; set; }
     }
 }

@@ -22,50 +22,55 @@
     }
 }
 
-<h1>Leave Request Details</h1>
+<h1><strong>Leave Request Details</strong></h1>
 
 <div class="alert alert-@className" role="alert">
     <h2 class="alert-heading">@headerText</h2>
-    <hr />
-    <p>
-        <strong>Employee Name:</strong> @Model.Employee.Firstname @Model.Employee.Lastname
-    </p>
-    <hr />
-    <p>
-        <strong>Date Requested:</strong> @Html.DisplayFor(model => model.DateRequested)
-    </p>
-</div>
-
-<div>
-    <hr />
     <dl class="row">
+        <dt class="col-sm-2">
+            Employee
+        </dt>
+        <dd class="col-sm-10">
+            <span class="badge bg-light text-dark">@Model.Employee.Firstname @Model.Employee.Lastname</span>
+        </dd>
+        <dt class="col-sm-2">
+            Date Requested
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DateRequested)
+        </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.LeaveType)
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.LeaveType.Name)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.StartDate)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.StartDate)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.EndDate)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.EndDate)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.RequestComments)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.RequestComments)
-        </dd>
+        @if(Model.RequestComments == null)
+        {
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.RequestComments)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.RequestComments)
+            </dd>
+        }
+        
     </dl>
 </div>
-<div>
+
+<div class="form-group">
     @if(Model.Approved == null)
     {
         <form asp-action="ApproveRequest">

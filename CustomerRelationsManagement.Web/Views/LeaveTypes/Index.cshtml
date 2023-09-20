@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<CustomerRelationsManagement.Common.Models.LeaveTypeViewModel>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Leave Types";
 }
 
 @if (TempData["ErrorMessage"] != null)
@@ -19,11 +19,14 @@
     </div>
 }
 
-<h1>Index</h1>
+<h1><strong>Leave Types</strong></h1>
 
 <p>
-    <a class="btn btn-success" asp-action="Create"><i class="fas fa-plus"></i> Create New</a>
+    <a asp-action="Create" class="btn btn-primary">
+        New Leave Type <i class="ti ti-plus fs-3 "></i>
+    </a>
 </p>
+
 <table class="table">
     <thead>
         <tr>
@@ -46,9 +49,8 @@
                 @Html.DisplayFor(modelItem => item.DefaultDays)
             </td>
                 <td>
-                    <button data-id="@item.Id" class="btn btn-primary allocateBtn" type="button">Allocate Leave</button>
-                    <a class="btn btn-warning text-white" asp-action="Edit" asp-route-id="@item.Id"><i class="fas fa-pencil-alt"></i></a>
-                    <a class="btn btn-info text-white" asp-action="Details" asp-route-id="@item.Id"><i class="fas fa-info-circle"></i></a>
+                    <button data-id="@item.Id" class="btn btn-secondary allocateBtn" type="button">Allocate to all Employees</button>
+                    <a class="btn btn-dark mr-1" asp-action="Edit" asp-route-id="@item.Id"><i class="fas fa-edit"></i></a>
                     <button data-id="@item.Id" class="btn btn-danger deleteBtn" type="button"><i class="far fa-trash-alt"></i></button>
                 </td>
         </tr>

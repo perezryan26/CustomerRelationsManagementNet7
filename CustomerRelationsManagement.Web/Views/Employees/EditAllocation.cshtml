@@ -4,9 +4,8 @@
     ViewData["Title"] = "Edit Allocation";
 }
 
-<h1>Edit @Model.LeaveType.Name for @Model.Employee.Firstname @Model.Employee.Lastname</h1>
+<h1><strong>Edit @Model.LeaveType.Name Allocation For @Model.Employee.Firstname @Model.Employee.Lastname</strong></h1>
 
-<hr />
 <div class="row">
     <div class="col-md-12">
         <form asp-action="EditAllocation">
@@ -25,6 +24,7 @@
                 <input asp-for="Period" class="form-control" />
                 <span asp-validation-for="Period" class="text-danger"></span>
             </div>
+            <br />
             <div class="form-group">
                 <a asp-action="Index" class="btn btn-dark">Back to List</a> &nbsp;
                 <input type="submit" value="Save" class="btn btn-primary btn-block" />

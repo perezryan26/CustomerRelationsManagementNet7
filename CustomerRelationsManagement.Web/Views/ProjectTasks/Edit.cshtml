@@ -4,10 +4,8 @@
     ViewData["Title"] = "Edit";
 }
 
-<h1>Edit</h1>
+<h1><strong>Edit Task</strong></h1>
 
-<h4>ProjectTaskViewModel</h4>
-<hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Edit">
@@ -29,11 +27,12 @@
             <div class="form-group">
                 <label asp-for="IsComplete" class="control-label"></label>
                 <div>
-                    <button type="button" class="btn btn-success" id="completeBtn">Complete</button>
-                    <button type="button" class="btn btn-danger" id="incompleteBtn">Incomplete</button>
+                    <select asp-for="IsComplete" class="form-control">
+                        <option value="true">Complete</option>
+                        <option value="false">Incomplete</option>
+                    </select>
                 </div>
             </div>
-            <input type="hidden" asp-for="IsComplete" id="isCompleteField" />
             <br />
             <div class="form-group">
                 @Html.LabelFor(model => model.TaskPriority)
@@ -52,21 +51,9 @@
             </div>
             <br />
             <div class="form-group">
-                <a asp-controller="Home" asp-action="ProjectDetails" asp-route-projectId="@Model?.ProjectId" class="btn btn-dark">Back to Project</a>
+                <a asp-controller="Home" asp-action="ProjectDetails" asp-route-projectId="@Model?.ProjectId" class="btn btn-dark">Back</a>
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
-
-<script>
-    $(document).ready(function () {
-        $("#completeBtn").click(function () {
-            $("#isCompleteField").val("true");
-        });
-
-        $("#incompleteBtn").click(function () {
-            $("#isCompleteField").val("false");
-        });
-    });
-</script>

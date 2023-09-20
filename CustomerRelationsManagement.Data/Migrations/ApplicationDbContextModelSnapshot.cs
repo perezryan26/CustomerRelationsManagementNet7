@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace CustomerRelationsManagement.Data.Migrations
+namespace CustomerRelationsManagement.Web.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot
@@ -17,12 +17,12 @@ namespace CustomerRelationsManagement.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.10")
+                .HasAnnotation("ProductVersion", "7.0.9")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("CustomerRelationsManagement.Data.Announcement", b =>
+            modelBuilder.Entity("CustomerRelationsManagement.Web.Data.Announcement", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -46,7 +46,83 @@ namespace CustomerRelationsManagement.Data.Migrations
                     b.ToTable("Announcements");
                 });
 
-            modelBuilder.Entity("CustomerRelationsManagement.Data.Employee", b =>
+            modelBuilder.Entity("CustomerRelationsManagement.Web.Data.Client", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CompanyName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Clients");
+                });
+
+            modelBuilder.Entity("CustomerRelationsManagement.Web.Data.Deal", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<double>("Amount")
+                        .HasColumnType("float");
+
+                    b.Property<int>("ClientId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("DateClosed")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClientId");
+
+                    b.ToTable("Deals");
+                });
+
+            modelBuilder.Entity("CustomerRelationsManagement.Web.Data.Employee", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -135,7 +211,7 @@ namespace CustomerRelationsManagement.Data.Migrations
                         {
                             Id = "87d97869-99c0-4df4-b011-fe094e99c111",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "c53fedc4-692f-4688-8cce-1be9e0a8aac0",
+                            ConcurrencyStamp = "03068c77-9a5d-4d27-b75e-b8af3d6807df",
                             DateJoined = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DateOfBirth = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "admin@admin.com",
@@ -145,16 +221,16 @@ namespace CustomerRelationsManagement.Data.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@ADMIN.COM",
                             NormalizedUserName = "ADMIN@ADMIN.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEGZK7wdlsb1pi/OtG7AQVPZiFkg7wTKzzVHoa+RlO8yHOGXfpjUZ1FQ3/A2HCuqEwg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEBBOH9WvzfRtnnZSsft1Oh+4NPsKXFUNB6uEzXjMlJup8rk5lieWbmuuHVU5FUC0hA==",
                             PhoneNumberConfirmed = false,
                             PositionId = 1,
-                            SecurityStamp = "f8a7c1ae-da52-4210-8df5-02d3d864f3c3",
+                            SecurityStamp = "390d4d8a-6311-488f-89f6-16ee247df76d",
                             TwoFactorEnabled = false,
                             UserName = "admin@admin.com"
                         });
                 });
 
-            modelBuilder.Entity("CustomerRelationsManagement.Data.LeaveAllocation", b =>
+            modelBuilder.Entity("CustomerRelationsManagement.Web.Data.LeaveAllocation", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -188,7 +264,7 @@ namespace CustomerRelationsManagement.Data.Migrations
                     b.ToTable("LeaveAllocations");
                 });
 
-            modelBuilder.Entity("CustomerRelationsManagement.Data.LeaveRequest", b =>
+            modelBuilder.Entity("CustomerRelationsManagement.Web.Data.LeaveRequest", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -234,7 +310,7 @@ namespace CustomerRelationsManagement.Data.Migrations
                     b.ToTable("LeaveRequests");
                 });
 
-            modelBuilder.Entity("CustomerRelationsManagement.Data.LeaveType", b =>
+            modelBuilder.Entity("CustomerRelationsManagement.Web.Data.LeaveType", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -260,7 +336,7 @@ namespace CustomerRelationsManagement.Data.Migrations
                     b.ToTable("LeaveTypes");
                 });
 
-            modelBuilder.Entity("CustomerRelationsManagement.Data.Position", b =>
+            modelBuilder.Entity("CustomerRelationsManagement.Web.Data.Position", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -284,7 +360,7 @@ namespace CustomerRelationsManagement.Data.Migrations
                     b.ToTable("Positions");
                 });
 
-            modelBuilder.Entity("CustomerRelationsManagement.Data.Project", b =>
+            modelBuilder.Entity("CustomerRelationsManagement.Web.Data.Project", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -314,7 +390,7 @@ namespace CustomerRelationsManagement.Data.Migrations
                     b.ToTable("Projects");
                 });
 
-            modelBuilder.Entity("CustomerRelationsManagement.Data.ProjectTask", b =>
+            modelBuilder.Entity("CustomerRelationsManagement.Web.Data.ProjectTask", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -532,9 +608,20 @@ namespace CustomerRelationsManagement.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("CustomerRelationsManagement.Data.Employee", b =>
+            modelBuilder.Entity("CustomerRelationsManagement.Web.Data.Deal", b =>
                 {
-                    b.HasOne("CustomerRelationsManagement.Data.Position", "Position")
+                    b.HasOne("CustomerRelationsManagement.Web.Data.Client", "Client")
+                        .WithMany()
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Client");
+                });
+
+            modelBuilder.Entity("CustomerRelationsManagement.Web.Data.Employee", b =>
+                {
+                    b.HasOne("CustomerRelationsManagement.Web.Data.Position", "Position")
                         .WithMany()
                         .HasForeignKey("PositionId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -543,9 +630,9 @@ namespace CustomerRelationsManagement.Data.Migrations
                     b.Navigation("Position");
                 });
 
-            modelBuilder.Entity("CustomerRelationsManagement.Data.LeaveAllocation", b =>
+            modelBuilder.Entity("CustomerRelationsManagement.Web.Data.LeaveAllocation", b =>
                 {
-                    b.HasOne("CustomerRelationsManagement.Data.LeaveType", "LeaveType")
+                    b.HasOne("CustomerRelationsManagement.Web.Data.LeaveType", "LeaveType")
                         .WithMany()
                         .HasForeignKey("LeaveTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -554,9 +641,9 @@ namespace CustomerRelationsManagement.Data.Migrations
                     b.Navigation("LeaveType");
                 });
 
-            modelBuilder.Entity("CustomerRelationsManagement.Data.LeaveRequest", b =>
+            modelBuilder.Entity("CustomerRelationsManagement.Web.Data.LeaveRequest", b =>
                 {
-                    b.HasOne("CustomerRelationsManagement.Data.LeaveType", "LeaveType")
+                    b.HasOne("CustomerRelationsManagement.Web.Data.LeaveType", "LeaveType")
                         .WithMany()
                         .HasForeignKey("LeaveTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -565,9 +652,9 @@ namespace CustomerRelationsManagement.Data.Migrations
                     b.Navigation("LeaveType");
                 });
 
-            modelBuilder.Entity("CustomerRelationsManagement.Data.ProjectTask", b =>
+            modelBuilder.Entity("CustomerRelationsManagement.Web.Data.ProjectTask", b =>
                 {
-                    b.HasOne("CustomerRelationsManagement.Data.Project", "Project")
+                    b.HasOne("CustomerRelationsManagement.Web.Data.Project", "Project")
                         .WithMany()
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -578,13 +665,13 @@ namespace CustomerRelationsManagement.Data.Migrations
 
             modelBuilder.Entity("EmployeeProject", b =>
                 {
-                    b.HasOne("CustomerRelationsManagement.Data.Employee", null)
+                    b.HasOne("CustomerRelationsManagement.Web.Data.Employee", null)
                         .WithMany()
                         .HasForeignKey("EmployeesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CustomerRelationsManagement.Data.Project", null)
+                    b.HasOne("CustomerRelationsManagement.Web.Data.Project", null)
                         .WithMany()
                         .HasForeignKey("ProjectsId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -602,7 +689,7 @@ namespace CustomerRelationsManagement.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("CustomerRelationsManagement.Data.Employee", null)
+                    b.HasOne("CustomerRelationsManagement.Web.Data.Employee", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -611,7 +698,7 @@ namespace CustomerRelationsManagement.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("CustomerRelationsManagement.Data.Employee", null)
+                    b.HasOne("CustomerRelationsManagement.Web.Data.Employee", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -626,7 +713,7 @@ namespace CustomerRelationsManagement.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CustomerRelationsManagement.Data.Employee", null)
+                    b.HasOne("CustomerRelationsManagement.Web.Data.Employee", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -635,7 +722,7 @@ namespace CustomerRelationsManagement.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("CustomerRelationsManagement.Data.Employee", null)
+                    b.HasOne("CustomerRelationsManagement.Web.Data.Employee", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)

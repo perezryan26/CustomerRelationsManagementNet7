@@ -1,52 +1,12 @@
 ﻿@model CustomerRelationsManagement.Common.Models.EmployeeAllocationViewModel
 
 @{
-    ViewData["Title"] = "ViewAllocations";
+    ViewData["Title"] = "View Allocations";
 }
 
-<h1>View Allocations for @Model.Firstname @Model.Lastname</h1>
-
-<div>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Firstname)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Firstname)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Lastname)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Lastname)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Email)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Email)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Position)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Position.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DateJoined)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DateJoined)
-        </dd>
-    </dl>
-</div>
-<hr/>
+<h1><strong>Leave Allocations for @Model.Firstname @Model.Lastname</strong></h1>
 
 <div class="card">
-  <div class="card-header">
-       <h4>Leave Allocations</h4>
-  </div>
   <ul class="list-group list-group-flush">
       <li class="list-group-item">
           <div class="row">
@@ -72,14 +32,13 @@
                         </button>
                     </div>
                     <div class="col">
-                        <a class="btn btn-warning" asp-action="EditAllocation" asp-route-id="@allocation.Id"><i class="fas fa-pencil-alt"></i> Edit Allocation</a>
+                        <a class="btn btn-dark" asp-action="EditAllocation" asp-route-id="@allocation.Id"><i class="fas fa-edit"></i></a>
                     </div>
                 </div>
             </li>
         }
     </ul>
 </div>
-</br>
 <div>
-    <a asp-action="Index" class="btn btn-dark">Back to List</a> &nbsp;
+    <a asp-action="Index" class="btn btn-secondary">Back to List</a> &nbsp;
 </div>

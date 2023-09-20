@@ -4,7 +4,7 @@ using CustomerRelationsManagement.Common.Constants;
 
 namespace CustomerRelationsManagement.Common.Models
 {
-    public class ProjectTaskCreateViewModel
+    public class ProjectTaskCreateViewModel : IValidatableObject
     {
         [Required]
         public string Name { get; set; }
@@ -22,5 +22,18 @@ namespace CustomerRelationsManagement.Common.Models
         [Required]
         [Display(Name = "Project")]
         public int ProjectId { get; set; }
+
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (Name?.Length > 20)
+            {
+                yield return new ValidationResult("Name exceed the character limit", new[] { nameof(Name) });
+            }
+
+            if (Description?.Length > 300)
+            {
+                yield return new ValidationResult("Description exceed the character limit", new[] { nameof(Description) });
+            }
+        }
     }
 }
