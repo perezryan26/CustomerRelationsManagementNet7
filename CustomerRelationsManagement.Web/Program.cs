@@ -28,7 +28,7 @@ builder.Services.AddDefaultIdentity<Employee>(options => options.SignIn.RequireC
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddTransient<IEmailSender>(s => new EmailSender("localhost", 25, "noreply@gmail.com"));
+builder.Services.AddTransient<IEmailSender>(s => new EmailSender("localhost", 25, "noreply@ryanperez.com"));
 
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<ILeaveTypeRepository, LeaveTypeRepository>();
